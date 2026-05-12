@@ -105,7 +105,7 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
               onClick={() => setShowMembers(v => !v)}
               title={showMembers ? 'Üyeleri Gizle' : 'Üyeleri Göster'}
               style={{
-                padding: '5px', background: 'none', border: 'none', cursor: 'pointer',
+                padding: '5px', border: 'none', cursor: 'pointer',
                 color: showMembers ? '#c96b82' : '#5a3d45', borderRadius: 6, display: 'flex', alignItems: 'center',
                 transition: 'color 0.15s, background 0.15s',
                 background: showMembers ? 'rgba(139,58,82,0.12)' : 'none',
