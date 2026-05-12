@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, use, useState } from 'react'
+import { Hash, Megaphone, Users, Settings, Clock } from 'lucide-react'
 import { useAppStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import { getSocket } from '@/hooks/useSocket'
@@ -16,10 +17,12 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
   const { user } = useAuthStore()
   const [slowModalOpen, setSlowModalOpen] = useState(false)
   const [slowInput, setSlowInput] = useState('')
+  const [showMembers, setShowMembers] = useState(true)
 
   const community = communities.find((c) => c.id === communityId)
   const channel = community?.channels.find((ch) => ch.id === channelId)
   const isOwner = community?.ownerId === user?.id
+  const ChannelIcon = channel?.type === 'ANNOUNCEMENT' ? Megaphone : Hash
 
   useEffect(() => {
     selectCommunity(communityId)
@@ -42,78 +45,129 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
   }
 
   return (
-    <div className="flex h-full">
-      <div className="flex flex-col flex-1 min-w-0">
+    <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
         {/* Channel header */}
-        <div
-          className="h-12 px-4 flex items-center gap-2 shrink-0"
-          style={{ borderBottom: '1px solid rgba(139,58,82,0.15)', background: 'rgba(8,3,5,0.8)' }}
-        >
-          <span style={{ color: '#8b3a52' }}>{channel?.type === 'ANNOUNCEMENT' ? '📢' : '#'}</span>
-          <span className="font-semibold text-sm" style={{ color: '#f0e4e7' }}>{channel?.name ?? channelId}</span>
+        <div style={{
+          height: 48,
+          padding: '0 16px',
+          display: 'flex', alignItems: 'center', gap: 10,
+          flexShrink: 0,
+          borderBottom: '1px solid var(--border)',
+          background: 'rgba(6,2,8,0.6)',
+          backdropFilter: 'blur(8px)',
+        }}>
+          <ChannelIcon size={17} style={{ color: '#8b3a52', flexShrink: 0 }} />
+          <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#f0e4e7' }}>
+            {channel?.name ?? channelId}
+          </span>
+
           {channel?.topic && (
             <>
-              <div className="w-px h-4 mx-1" style={{ background: 'rgba(139,58,82,0.3)' }} />
-              <span className="text-sm truncate" style={{ color: '#9a7a82' }}>{channel.topic}</span>
+              <div style={{ width: 1, height: 16, background: 'rgba(139,58,82,0.3)', margin: '0 4px' }} />
+              <span style={{ fontSize: '0.8125rem', color: '#5a3d45', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                {channel.topic}
+              </span>
             </>
           )}
-          <div className="flex-1" />
-          {channel?.slowMode ? (
-            <span className="text-xs flex items-center gap-1" style={{ color: '#9a7a82' }}>🐌 {channel.slowMode}s</span>
-          ) : null}
-          {isOwner && (
+
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
+            {channel?.slowMode ? (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                fontSize: '0.75rem', color: '#8a6870',
+                padding: '2px 8px', borderRadius: 12,
+                background: 'rgba(139,58,82,0.1)',
+                border: '1px solid rgba(139,58,82,0.2)',
+              }}>
+                <Clock size={11} />
+                {channel.slowMode}s yavaş mod
+              </div>
+            ) : null}
+
+            {isOwner && (
+              <button
+                onClick={() => { setSlowInput(String(channel?.slowMode ?? 0)); setSlowModalOpen(true) }}
+                title="Kanal Ayarları"
+                style={{
+                  padding: '5px', background: 'none', border: 'none', cursor: 'pointer',
+                  color: '#5a3d45', borderRadius: 6, display: 'flex', alignItems: 'center',
+                  transition: 'color 0.15s, background 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#c4a0ab'; e.currentTarget.style.background = 'rgba(139,58,82,0.12)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#5a3d45'; e.currentTarget.style.background = 'none' }}
+              >
+                <Settings size={15} />
+              </button>
+            )}
+
             <button
-              onClick={() => { setSlowInput(String(channel?.slowMode ?? 0)); setSlowModalOpen(true) }}
-              title="Yavaş Mod Ayarla"
-              className="text-sm transition-colors ml-1"
-              style={{ color: '#7a5a62' }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#c4a0a8')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = '#7a5a62')}
+              onClick={() => setShowMembers(v => !v)}
+              title={showMembers ? 'Üyeleri Gizle' : 'Üyeleri Göster'}
+              style={{
+                padding: '5px', background: 'none', border: 'none', cursor: 'pointer',
+                color: showMembers ? '#c96b82' : '#5a3d45', borderRadius: 6, display: 'flex', alignItems: 'center',
+                transition: 'color 0.15s, background 0.15s',
+                background: showMembers ? 'rgba(139,58,82,0.12)' : 'none',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#c4a0ab' }}
+              onMouseLeave={e => { e.currentTarget.style.color = showMembers ? '#c96b82' : '#5a3d45' }}
             >
-              ⚙️
+              <Users size={15} />
             </button>
-          )}
+          </div>
         </div>
 
         <MessageList channelId={channelId} />
         <MessageInput channelId={channelId} />
       </div>
 
-      <MemberList communityId={communityId} />
+      {showMembers && <MemberList communityId={communityId} />}
 
       {/* Slow mode modal */}
       {slowModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(6px)' }}
           onClick={() => setSlowModalOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 50,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)',
+          }}
         >
           <div
-            className="rounded-2xl p-7 w-80 shadow-2xl"
-            style={{ background: 'rgba(26,9,15,0.99)', border: '1px solid rgba(139,58,82,0.42)' }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
+            className="animate-scale-in"
+            style={{
+              background: 'rgba(19,7,24,0.98)',
+              border: '1px solid rgba(139,58,82,0.4)',
+              borderRadius: 18,
+              padding: '28px 28px 24px',
+              width: 320,
+              boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+            }}
           >
-            <h3 className="font-bold mb-1 text-lg" style={{ color: '#f0e4e7' }}>Yavaş Mod</h3>
-            <p className="text-xs mb-4 italic" style={{ color: '#7a5a62' }}>Kullanıcılar arasındaki mesaj süresi (saniye). 0 = kapalı.</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+              <Clock size={18} style={{ color: '#c96b82' }} />
+              <h3 style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#f0e4e7' }}>Yavaş Mod</h3>
+            </div>
+            <p style={{ fontSize: '0.8125rem', color: '#5a3d45', fontStyle: 'italic', marginBottom: 20 }}>
+              Kullanıcılar arası mesaj aralığı (saniye). 0 = kapalı.
+            </p>
             <input
               type="number" min={0} max={3600}
               value={slowInput}
-              onChange={(e) => setSlowInput(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg text-sm outline-none mb-4"
-              style={{ background: '#10050a', border: '1px solid rgba(139,58,82,0.3)', color: '#f0e4e7' }}
-              onFocus={(e) => (e.target.style.borderColor = '#8b3a52')}
-              onBlur={(e) => (e.target.style.borderColor = 'rgba(139,58,82,0.3)')}
+              onChange={e => setSlowInput(e.target.value)}
+              className="input-base"
               placeholder="Saniye (0 = kapalı)"
+              style={{ width: '100%', padding: '10px 14px', fontSize: '0.9375rem', marginBottom: 16 }}
             />
-            <div className="flex gap-3">
-              <button onClick={() => setSlowModalOpen(false)}
-                className="flex-1 py-2.5 rounded-xl text-sm font-medium"
-                style={{ background: 'rgba(139,58,82,0.1)', color: '#9a7a82', border: '1px solid rgba(139,58,82,0.2)' }}>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setSlowModalOpen(false)} className="btn-ghost"
+                style={{ flex: 1, padding: '10px', fontSize: '0.875rem', fontFamily: 'inherit' }}>
                 İptal
               </button>
-              <button onClick={setSlowMode}
-                className="flex-1 py-2.5 rounded-xl font-semibold text-sm"
-                style={{ background: 'linear-gradient(135deg, #8b3a52, #a84f68)', color: '#f0e4e7' }}>
+              <button onClick={setSlowMode} className="btn-primary"
+                style={{ flex: 1, padding: '10px', fontSize: '0.875rem' }}>
                 Kaydet
               </button>
             </div>

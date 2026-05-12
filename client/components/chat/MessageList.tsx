@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { Pencil, Trash2, Smile } from 'lucide-react'
 import { useAppStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import { getSocket } from '@/hooks/useSocket'
@@ -14,6 +15,7 @@ export default function MessageList({ channelId }: { channelId: string }) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -28,55 +30,87 @@ export default function MessageList({ channelId }: { channelId: string }) {
 
   if (channelMessages.length === 0) {
     return (
-      <div className="flex-1 flex items-end px-6 pb-6 text-sm italic" style={{ color: '#7a5a62' }}>
-        <p>Bu kanalda henüz mesaj yok. İlk mesajı sen gönder! 🌸</p>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '0 24px 24px' }}>
+        <div style={{ textAlign: 'center', padding: '32px 24px', maxWidth: 320 }}>
+          <div style={{ fontSize: '3rem', marginBottom: 12 }}>💬</div>
+          <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#f0e4e7', marginBottom: 6 }}>
+            Konuşmayı sen başlat!
+          </p>
+          <p style={{ fontSize: '0.875rem', color: '#5a3d45', fontStyle: 'italic' }}>
+            Bu kanalda henüz mesaj yok. İlk mesajı gönder. 🌸
+          </p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-4" style={{ gap: 0 }}>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0 8px' }}>
       {channelMessages.map((msg, i) => {
         const prev = channelMessages[i - 1]
         const grouped = prev?.author.id === msg.author.id &&
           new Date(msg.createdAt).getTime() - new Date(prev.createdAt).getTime() < 5 * 60 * 1000
         const isMe = msg.author.id === user?.id
+        const isHovered = hoveredId === msg.id
 
         return (
           <div
             key={msg.id}
-            className={`flex gap-3 rounded-xl px-3 py-1 group relative ${!grouped ? 'mt-5' : 'mt-0.5'}`}
-            style={{ transition: 'background 0.15s' }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(139,58,82,0.07)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-            onDoubleClick={() => isMe && (setEditingId(msg.id), setEditContent(msg.content))}
+            onMouseEnter={() => setHoveredId(msg.id)}
+            onMouseLeave={() => setHoveredId(null)}
+            onDoubleClick={() => isMe && editingId !== msg.id && (setEditingId(msg.id), setEditContent(msg.content))}
+            style={{
+              display: 'flex',
+              gap: 12,
+              padding: `${grouped ? 2 : 16}px 16px ${grouped ? 1 : 2}px`,
+              background: isHovered ? 'rgba(139,58,82,0.05)' : 'transparent',
+              transition: 'background 0.1s',
+              position: 'relative',
+              marginTop: grouped ? 0 : 4,
+            }}
           >
+            {/* Avatar */}
             {!grouped ? (
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5"
-                style={{ background: isMe ? 'linear-gradient(135deg, #8b3a52, #a84f68)' : 'rgba(139,58,82,0.3)', color: '#f0e4e7' }}
-              >
+              <div style={{
+                width: 38, height: 38,
+                borderRadius: '50%',
+                background: isMe
+                  ? 'linear-gradient(135deg, #8b3a52, #b04e6a)'
+                  : 'linear-gradient(135deg, #2d1420, #4a2030)',
+                color: '#f0e4e7',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.875rem', fontWeight: 700,
+                flexShrink: 0, marginTop: 2,
+                boxShadow: isMe ? '0 2px 8px rgba(139,58,82,0.3)' : 'none',
+              }}>
                 {msg.author.displayName[0].toUpperCase()}
               </div>
             ) : (
-              <div className="w-9 shrink-0" />
+              <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {isHovered && (
+                  <span style={{ fontSize: '0.625rem', color: '#5a3d45' }}>
+                    {new Date(msg.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
+              </div>
             )}
 
-            <div className="flex-1 min-w-0">
+            {/* Content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
               {!grouped && (
-                <div className="flex items-baseline gap-2 mb-0.5">
-                  <span className="font-semibold text-sm" style={{ color: isMe ? '#c96b82' : '#f0e4e7' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 3 }}>
+                  <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: isMe ? '#c96b82' : '#f0e4e7' }}>
                     {msg.author.displayName}
                   </span>
-                  <span className="text-xs" style={{ color: '#7a5a62' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#5a3d45' }}>
                     {new Date(msg.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
               )}
 
               {editingId === msg.id ? (
-                <div className="flex gap-2 mt-1">
-                  <input
+                <div style={{ marginTop: 4 }}>
+                  <textarea
                     autoFocus
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
@@ -84,45 +118,81 @@ export default function MessageList({ channelId }: { channelId: string }) {
                       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitEdit(msg.id) }
                       if (e.key === 'Escape') setEditingId(null)
                     }}
-                    className="flex-1 px-3 py-1.5 rounded-lg text-sm outline-none"
-                    style={{ background: '#10050a', border: '1px solid #8b3a52', color: '#f0e4e7' }}
+                    rows={2}
+                    style={{
+                      width: '100%', padding: '8px 12px',
+                      background: 'var(--bg-input)', border: '1px solid #8b3a52',
+                      borderRadius: 8, color: '#f0e4e7', fontSize: '0.9375rem',
+                      outline: 'none', resize: 'none', fontFamily: 'inherit',
+                      boxShadow: '0 0 0 3px rgba(139,58,82,0.15)',
+                    }}
                   />
-                  <button onClick={() => submitEdit(msg.id)} className="text-xs font-semibold hover:underline" style={{ color: '#c96b82' }}>Kaydet</button>
-                  <button onClick={() => setEditingId(null)} className="text-xs hover:underline" style={{ color: '#7a5a62' }}>İptal</button>
+                  <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: '0.75rem' }}>
+                    <button onClick={() => submitEdit(msg.id)} style={{ color: '#c96b82', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                      Kaydet
+                    </button>
+                    <button onClick={() => setEditingId(null)} style={{ color: '#5a3d45', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                      İptal (Esc)
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <p className="text-sm leading-relaxed break-words" style={{ color: '#e4d0d4' }}>
+                <p style={{ fontSize: '0.9375rem', lineHeight: 1.5, color: '#ddc8cc', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
                   {msg.content}
-                  {msg.edited && <span className="text-xs ml-1.5 italic" style={{ color: '#7a5a62' }}>(düzenlendi)</span>}
+                  {msg.edited && <span style={{ fontSize: '0.7rem', marginLeft: 6, color: '#5a3d45', fontStyle: 'italic' }}>(düzenlendi)</span>}
                 </p>
               )}
             </div>
 
             {/* Hover toolbar */}
-            {editingId !== msg.id && (
-              <div
-                className="absolute right-3 top-0 -translate-y-1/2 hidden group-hover:flex items-center gap-0.5 rounded-xl px-2 py-1 shadow-lg"
-                style={{ background: '#180a0d', border: '1px solid rgba(139,58,82,0.35)' }}
-              >
+            {editingId !== msg.id && isHovered && (
+              <div style={{
+                position: 'absolute',
+                right: 16, top: -18,
+                display: 'flex', alignItems: 'center', gap: 2,
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border-strong)',
+                borderRadius: 10,
+                padding: '4px 6px',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                zIndex: 10,
+              }}>
                 {REACTIONS.map((emoji) => (
-                  <button key={emoji} onClick={() => getSocket()?.emit('message:react', { messageId: msg.id, channelId, emoji })}
-                    className="text-sm px-0.5 transition-transform hover:scale-125" title={emoji}>
+                  <button key={emoji}
+                    onClick={() => getSocket()?.emit('message:react', { messageId: msg.id, channelId, emoji })}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      fontSize: '0.9375rem', padding: '2px 3px', borderRadius: 5,
+                      transition: 'transform 0.1s, background 0.1s',
+                      lineHeight: 1,
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.3)'; e.currentTarget.style.background = 'rgba(139,58,82,0.15)' }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'none' }}
+                    title={emoji}>
                     {emoji}
                   </button>
                 ))}
                 {isMe && (
                   <>
-                    <div className="w-px h-4 mx-1" style={{ background: 'rgba(139,58,82,0.3)' }} />
-                    <button onClick={() => { setEditingId(msg.id); setEditContent(msg.content) }}
-                      className="text-xs px-1 transition-colors" style={{ color: '#9a7a82' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = '#f0e4e7')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = '#9a7a82')}
-                      title="Düzenle">✏️</button>
-                    <button onClick={() => getSocket()?.emit('message:delete', { messageId: msg.id, channelId })}
-                      className="text-xs px-1 transition-colors" style={{ color: '#9a7a82' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = '#e85c6a')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = '#9a7a82')}
-                      title="Sil">🗑</button>
+                    <div style={{ width: 1, height: 16, background: 'rgba(139,58,82,0.3)', margin: '0 4px' }} />
+                    <button
+                      onClick={() => { setEditingId(msg.id); setEditContent(msg.content) }}
+                      style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', color: '#8a6870', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#f0e4e7'; e.currentTarget.style.background = 'rgba(139,58,82,0.15)' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#8a6870'; e.currentTarget.style.background = 'none' }}
+                      title="Düzenle"
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    <button
+                      onClick={() => getSocket()?.emit('message:delete', { messageId: msg.id, channelId })}
+                      style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', color: '#8a6870', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#e85c6a'; e.currentTarget.style.background = 'rgba(232,92,106,0.1)' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#8a6870'; e.currentTarget.style.background = 'none' }}
+                      title="Sil"
+                    >
+                      <Trash2 size={13} />
+                    </button>
                   </>
                 )}
               </div>
