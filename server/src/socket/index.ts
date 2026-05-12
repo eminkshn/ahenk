@@ -22,11 +22,11 @@ export function setupSocket(io: Server) {
 
     // Join community rooms
     const memberships = await prisma.communityMember.findMany({ where: { userId }, select: { communityId: true } })
-    memberships.forEach((m) => socket.join(`community:${m.communityId}`))
+    memberships.forEach((m: (typeof memberships)[number]) => socket.join(`community:${m.communityId}`))
 
     // Join DM conversation rooms
     const convParticipants = await prisma.conversationParticipant.findMany({ where: { userId }, select: { conversationId: true } })
-    convParticipants.forEach((p) => socket.join(`conversation:${p.conversationId}`))
+    convParticipants.forEach((p: (typeof convParticipants)[number]) => socket.join(`conversation:${p.conversationId}`))
 
     // ─── Kanal ────────────────────────────────────────────────────────────────
 

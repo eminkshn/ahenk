@@ -13,7 +13,7 @@ router.get('/', async (req: AuthRequest, res: Response) => {
       receiver: { select: { id: true, username: true, displayName: true, avatar: true, status: true } }
     }
   })
-  const friends = requests.map((r) => (r.senderId === req.userId ? r.receiver : r.sender))
+  const friends = requests.map((r: (typeof requests)[number]) => (r.senderId === req.userId ? r.receiver : r.sender))
   res.json(friends)
 })
 
