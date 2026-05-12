@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Kullanıcı ────────────────────────────────────────────────────────────────
+
+model User {
+  id          String     @id @default(cuid())
+  username    String     @unique
+  displayName String
+  email       String     @unique
+  password    String
+  avatar      String?
+  status      UserStatus @default(OFFLINE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  ownedCommunities Community[]               @relation("CommunityOwner")
+  memberships      CommunityMember[]
+  messages         Message[]
+  reactions        MessageReaction[]
+  directMessages   DirectMessage[]           @relation("DMSender")
+  conversations    ConversationParticipant[]
+  sentRequests     FriendRequest[]           @relation("FriendRequestSender")
+  receivedRequests FriendRequest[]           @relation("FriendRequestReceiver")
+  blocking         Block[]                   @relation("Blocker")
+  blockedBy        Block[]                   @relation("Blocked")
+  refreshTokens    RefreshToken[]
+  bans             CommunityBan[]            @relation("BannedUser")
+  issuedBans       CommunityBan[]            @relation("BannedBy")
+}
+
+enum UserStatus {
+  ONLINE
+  IDLE
+  DND
+  OFFLINE
+}
+
+// ─── Topluluk ─────────────────────────────────────────────────────────────────
+
+model Community {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String?
+  inviteCode  String   @unique @default(cuid())
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner      User              @relation("CommunityOwner", fields: [ownerId], references: [id])
+  members    CommunityMember[]
+  roles      Role[]
+  categories Category[]
+  channels   Channel[]
+  bans       CommunityBan[]
+}
+
+// ─── Rol ──────────────────────────────────────────────────────────────────────
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String
+  color       String   @default("#99AAB5")
+  permissions BigInt   @default(0)
+  position    Int      @default(0)
+  communityId String
+  createdAt   DateTime @default(now())
+
+  community Community    @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  members   MemberRole[]
+}
+
+model CommunityMember {
+  id          String   @id @default(cuid())
+  userId      String
+  communityId String
+  nickname    String?
+  joinedAt    DateTime @default(now())
+
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community Community    @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  roles     MemberRole[]
+
+  @@unique([userId, communityId])
+}
+
+model MemberRole {
+  memberId String
+  roleId   String
+
+  member CommunityMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  role   Role            @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([memberId, roleId])
+}
+
+// ─── Kategori & Kanal ─────────────────────────────────────────────────────────
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  position    Int      @default(0)
+  communityId String
+  createdAt   DateTime @default(now())
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  channels  Channel[]
+}
+
+model Channel {
+  id          String      @id @default(cuid())
+  name        String
+  type        ChannelType @default(TEXT)
+  topic       String?
+  position    Int         @default(0)
+  communityId String
+  categoryId  String?
+  slowMode    Int         @default(0)
+  createdAt   DateTime    @default(now())
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  category  Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  messages  Message[]
+}
+
+enum ChannelType {
+  TEXT
+  ANNOUNCEMENT
+}
+
+// ─── Mesaj ────────────────────────────────────────────────────────────────────
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  authorId  String
+  channelId String
+  edited    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author    User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  channel   Channel           @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  reactions MessageReaction[]
+}
+
+// ─── Özel Mesajlaşma ──────────────────────────────────────────────────────────
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  participants ConversationParticipant[]
+  messages     DirectMessage[]
+}
+
+model ConversationParticipant {
+  conversationId String
+  userId         String
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+}
+
+model DirectMessage {
+  id             String   @id @default(cuid())
+  content        String
+  senderId       String
+  conversationId String
+  edited         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  sender       User         @relation("DMSender", fields: [senderId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+// ─── Arkadaşlık & Engelleme ───────────────────────────────────────────────────
+
+model FriendRequest {
+  id         String              @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     FriendRequestStatus @default(PENDING)
+  createdAt  DateTime            @default(now())
+
+  sender   User @relation("FriendRequestSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("FriendRequestReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Block {
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  blocker User @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@id([blockerId, blockedId])
+}
+
+// ─── Reaksiyon & Moderasyon ───────────────────────────────────────────────────
+
+model MessageReaction {
+  id        String   @id @default(cuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+}
+
+model CommunityBan {
+  communityId String
+  userId      String
+  bannedById  String
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user      User      @relation("BannedUser", fields: [userId], references: [id], onDelete: Cascade)
+  bannedBy  User      @relation("BannedBy", fields: [bannedById], references: [id])
+
+  @@id([communityId, userId])
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
