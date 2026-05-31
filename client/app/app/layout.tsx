@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useAppStore } from '@/store/app'
@@ -17,6 +17,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { user } = useAuthStore()
   const { setCommunities } = useAppStore()
+  const [channelOpen, setChannelOpen] = useState(true)
   useSocket()
 
   const isDM = pathname.startsWith('/app/dm')
@@ -34,8 +35,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: '#080305', color: '#f0e4e7', fontFamily: "'Lora', Georgia, serif" }}>
       <Background />
-      <CommunitySidebar />
-      {isDM ? <DMSidebar /> : <ChannelSidebar />}
+      <CommunitySidebar channelOpen={channelOpen} onToggle={() => setChannelOpen(v => !v)} />
+      {channelOpen && (isDM ? <DMSidebar /> : <ChannelSidebar />)}
       <main className="flex-1 flex flex-col overflow-hidden min-w-0">
         {children}
       </main>

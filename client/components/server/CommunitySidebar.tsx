@@ -2,15 +2,22 @@
 
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { MessageCircle, Plus } from 'lucide-react'
+import { MessageCircle, Plus, Menu, X, LogOut, Settings } from 'lucide-react'
 import { useAppStore } from '@/store/app'
+import { useAuthStore } from '@/store/auth'
 import CommunityModal from './CommunityModal'
+import ProfileModal from '@/components/ui/ProfileModal'
 
-export default function CommunitySidebar() {
+export default function CommunitySidebar({ channelOpen, onToggle }: {
+  channelOpen: boolean
+  onToggle: () => void
+}) {
   const router = useRouter()
   const pathname = usePathname()
   const { communities } = useAppStore()
+  const { user, logout } = useAuthStore()
   const [modalOpen, setModalOpen] = useState(false)
+  const [profileModalOpen, setProfileModalOpen] = useState(false)
 
   function handleSelect(communityId: string) {
     const community = communities.find((c) => c.id === communityId)
@@ -27,8 +34,8 @@ export default function CommunitySidebar() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      paddingTop: 12,
-      paddingBottom: 12,
+      paddingTop: 8,
+      paddingBottom: 8,
       gap: 6,
       overflowY: 'auto',
       overflowX: 'hidden',
@@ -36,6 +43,33 @@ export default function CommunitySidebar() {
       background: 'var(--bg-base)',
       borderRight: '1px solid var(--border)',
     }}>
+      {/* Hamburger toggle */}
+      <button
+        onClick={onToggle}
+        title={channelOpen ? 'Kenar Çubuğunu Gizle' : 'Kenar Çubuğunu Göster'}
+        style={{
+          width: 40, height: 40,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: channelOpen ? 'rgba(139,58,82,0.18)' : 'rgba(139,58,82,0.08)',
+          color: channelOpen ? '#c96b82' : '#8a6870',
+          border: 'none', borderRadius: 10, cursor: 'pointer',
+          transition: 'all 0.2s',
+          flexShrink: 0,
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,58,82,0.28)'; e.currentTarget.style.color = '#f0e4e7' }}
+        onMouseLeave={e => { e.currentTarget.style.background = channelOpen ? 'rgba(139,58,82,0.18)' : 'rgba(139,58,82,0.08)'; e.currentTarget.style.color = channelOpen ? '#c96b82' : '#8a6870' }}
+      >
+        {channelOpen ? <X size={18} /> : <Menu size={18} />}
+      </button>
+
+      {/* Divider */}
+      <div style={{
+        width: 32, height: 2,
+        background: 'linear-gradient(to right, transparent, rgba(139,58,82,0.4), transparent)',
+        borderRadius: 1, margin: '2px 0',
+        flexShrink: 0,
+      }} />
+
       {/* DM button */}
       <NavIcon
         active={isDM}
@@ -71,7 +105,74 @@ export default function CommunitySidebar() {
       {/* Add community */}
       <AddButton onClick={() => setModalOpen(true)} />
 
+      {/* Spacer */}
+      <div style={{ flex: 1 }} />
+
+      {/* Divider before profile */}
+      <div style={{
+        width: 32, height: 2,
+        background: 'linear-gradient(to right, transparent, rgba(139,58,82,0.4), transparent)',
+        borderRadius: 1, margin: '2px 0',
+        flexShrink: 0,
+      }} />
+
+      {/* Settings / Profile */}
+      <button
+        onClick={() => setProfileModalOpen(true)}
+        title={`${user?.displayName} — Profil Ayarları`}
+        style={{
+          width: 40, height: 40,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'linear-gradient(135deg, #8b3a52, #b04e6a)',
+          color: '#f0e4e7', border: 'none', cursor: 'pointer',
+          borderRadius: '50%',
+          fontSize: '0.875rem', fontWeight: 700,
+          transition: 'opacity 0.15s, transform 0.15s',
+          boxShadow: '0 2px 8px rgba(139,58,82,0.35)',
+          flexShrink: 0,
+        }}
+        onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'scale(1.07)' }}
+        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}
+      >
+        {user?.displayName?.[0]?.toUpperCase()}
+      </button>
+
+      {/* Settings icon */}
+      <button
+        onClick={() => setProfileModalOpen(true)}
+        title="Profil Ayarları"
+        style={{
+          width: 40, height: 40,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'none', color: '#5a3d45', border: 'none', cursor: 'pointer',
+          borderRadius: 10, transition: 'all 0.15s',
+          flexShrink: 0,
+        }}
+        onMouseEnter={e => { e.currentTarget.style.color = '#c4a0ab'; e.currentTarget.style.background = 'rgba(139,58,82,0.12)' }}
+        onMouseLeave={e => { e.currentTarget.style.color = '#5a3d45'; e.currentTarget.style.background = 'none' }}
+      >
+        <Settings size={17} />
+      </button>
+
+      {/* Logout */}
+      <button
+        onClick={() => { logout(); router.push('/login') }}
+        title="Çıkış Yap"
+        style={{
+          width: 40, height: 40,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'none', color: '#5a3d45', border: 'none', cursor: 'pointer',
+          borderRadius: 10, transition: 'all 0.15s',
+          flexShrink: 0,
+        }}
+        onMouseEnter={e => { e.currentTarget.style.color = '#e85c6a'; e.currentTarget.style.background = 'rgba(232,92,106,0.1)' }}
+        onMouseLeave={e => { e.currentTarget.style.color = '#5a3d45'; e.currentTarget.style.background = 'none' }}
+      >
+        <LogOut size={17} />
+      </button>
+
       <CommunityModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} />
     </div>
   )
 }
