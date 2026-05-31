@@ -32,6 +32,7 @@ model User {
   refreshTokens    RefreshToken[]
   bans             CommunityBan[]            @relation("BannedUser")
   issuedBans       CommunityBan[]            @relation("BannedBy")
+  starredMessages  StarredMessage[]
 }
 
 enum UserStatus {
@@ -148,6 +149,19 @@ model Message {
   author    User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
   channel   Channel           @relation(fields: [channelId], references: [id], onDelete: Cascade)
   reactions MessageReaction[]
+  stars     StarredMessage[]
+}
+
+model StarredMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  messageId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, messageId])
 }
 
 // ─── Özel Mesajlaşma ──────────────────────────────────────────────────────────

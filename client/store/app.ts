@@ -15,6 +15,7 @@ export interface Message {
   edited: boolean
   createdAt: string
   author: User
+  starred?: boolean
 }
 
 export interface Channel {

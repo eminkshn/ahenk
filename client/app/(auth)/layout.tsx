@@ -1,3 +1,5 @@
+import Logo from '@/components/ui/Logo'
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -11,6 +13,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         backgroundSize: 'auto, 36px 36px',
       }}
     >
+      <div style={{ position: 'fixed', top: 20, left: 24, zIndex: 10 }}>
+        <Logo size="md" />
+      </div>
       {children}
     </div>
   )

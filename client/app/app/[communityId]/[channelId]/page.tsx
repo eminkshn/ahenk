@@ -27,7 +27,13 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
   useEffect(() => {
     selectCommunity(communityId)
     selectChannel(channelId)
-    api.get(`/channels/${channelId}/messages`).then(({ data }) => setMessages(channelId, data as Message[]))
+    Promise.all([
+      api.get(`/channels/${channelId}/messages`),
+      api.get(`/channels/${channelId}/starred`).catch(() => ({ data: [] })),
+    ]).then(([{ data: msgs }, { data: starred }]) => {
+      const starredIds = new Set((starred as Message[]).map(m => m.id))
+      setMessages(channelId, (msgs as Message[]).map(m => ({ ...m, starred: starredIds.has(m.id) })))
+    })
     const socket = getSocket()
     socket?.emit('channel:join', channelId)
     return () => { socket?.emit('channel:leave', channelId) }

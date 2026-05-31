@@ -12,6 +12,7 @@ import friendsRouter from './routes/friends'
 import conversationsRouter from './routes/conversations'
 import moderationRouter from './routes/moderation'
 import { setupSocket } from './socket'
+import { prisma } from './lib/prisma'
 
 const app = express()
 const httpServer = createServer(app)
@@ -50,6 +51,20 @@ app.use('/api/conversations', conversationsRouter)
 app.use('/api', moderationRouter)
 
 app.get('/health', (_req, res) => res.json({ ok: true }))
+
+async function cleanupOldMessages() {
+  const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+  const result = await prisma.message.deleteMany({
+    where: {
+      createdAt: { lt: oneYearAgo },
+      stars: { none: {} },
+    },
+  })
+  if (result.count > 0) console.log(`Temizlendi: ${result.count} yıldızsız eski mesaj silindi`)
+}
+
+cleanupOldMessages()
+setInterval(cleanupOldMessages, 24 * 60 * 60 * 1000)
 
 setupSocket(io)
 

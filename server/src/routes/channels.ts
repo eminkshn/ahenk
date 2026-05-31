@@ -72,6 +72,40 @@ router.delete('/communities/:communityId/channels/:channelId', async (req: AuthR
   res.json({ ok: true })
 })
 
+// ─── Mesaj Yıldızlama ────────────────────────────────────────────────────────
+
+router.post('/channels/:channelId/messages/:messageId/star', async (req: AuthRequest, res: Response) => {
+  const messageId = String(req.params.messageId)
+  await prisma.starredMessage.upsert({
+    where: { userId_messageId: { userId: req.userId!, messageId } },
+    create: { userId: req.userId!, messageId },
+    update: {},
+  })
+  res.json({ ok: true })
+})
+
+router.delete('/channels/:channelId/messages/:messageId/star', async (req: AuthRequest, res: Response) => {
+  const messageId = String(req.params.messageId)
+  await prisma.starredMessage.delete({
+    where: { userId_messageId: { userId: req.userId!, messageId } }
+  }).catch(() => {})
+  res.json({ ok: true })
+})
+
+router.get('/channels/:channelId/starred', async (req: AuthRequest, res: Response) => {
+  const channelId = String(req.params.channelId)
+  const starred = await prisma.starredMessage.findMany({
+    where: { userId: req.userId!, message: { channelId } },
+    include: {
+      message: {
+        include: { author: { select: { id: true, username: true, displayName: true, avatar: true } } }
+      }
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+  res.json(starred.map((s: (typeof starred)[number]) => s.message))
+})
+
 router.get('/channels/:channelId/messages', async (req: AuthRequest, res: Response) => {
   const channelId = String(req.params.channelId)
   const channel = await prisma.channel.findUnique({ where: { id: channelId } })

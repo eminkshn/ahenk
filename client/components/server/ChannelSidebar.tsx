@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { Hash, Megaphone, ChevronDown, ChevronRight, UserPlus, Plus, Trash2, LogOut, Settings, LogIn } from 'lucide-react'
+import { Hash, Megaphone, ChevronDown, ChevronRight, UserPlus, Plus, Trash2, LogOut, Settings, LogIn, Pencil, Shield } from 'lucide-react'
 import { useAppStore, type Channel, type Category } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import api from '@/lib/api'
 import ChannelModal from './ChannelModal'
 import InviteModal from './InviteModal'
 import ProfileModal from '@/components/ui/ProfileModal'
+import RoleModal from './RoleModal'
+import Logo from '@/components/ui/Logo'
 
 export default function ChannelSidebar() {
   const router = useRouter()
@@ -16,7 +18,9 @@ export default function ChannelSidebar() {
   const { communities, setCommunities } = useAppStore()
   const { user, logout } = useAuthStore()
   const [channelModalOpen, setChannelModalOpen] = useState(false)
+  const [editChannelId, setEditChannelId] = useState<string | null>(null)
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
+  const [roleModalOpen, setRoleModalOpen] = useState(false)
   const [profileModalOpen, setProfileModalOpen] = useState(false)
   const [collapsedCats, setCollapsedCats] = useState<Set<string>>(new Set())
 
@@ -30,8 +34,8 @@ export default function ChannelSidebar() {
   if (!community) {
     return (
       <div style={sidebarStyle}>
-        <div style={headerStyle}>
-          <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#c96b82' }}>Ahenk</span>
+        <div style={{ ...headerStyle, justifyContent: 'flex-start', paddingLeft: 16 }}>
+          <Logo size="sm" />
         </div>
       </div>
     )
@@ -70,6 +74,15 @@ export default function ChannelSidebar() {
     }
   }
 
+  async function deleteCategory(categoryId: string) {
+    try {
+      await api.delete(`/communities/${community!.id}/categories/${categoryId}`)
+      setCommunities(communities.map((c) => c.id === community!.id
+        ? { ...c, categories: c.categories.filter((cat) => cat.id !== categoryId) }
+        : c))
+    } catch {}
+  }
+
   async function deleteCommunity() {
     if (!confirm(`"${community!.name}" topluluğunu silmek istediğine emin misin?`)) return
     try {
@@ -81,7 +94,12 @@ export default function ChannelSidebar() {
 
   return (
     <div style={sidebarStyle}>
-      {/* Header */}
+      {/* Logo bar */}
+      <div style={{ ...headerStyle, justifyContent: 'flex-start', paddingLeft: 16, borderBottom: '1px solid var(--border)' }}>
+        <Logo size="sm" />
+      </div>
+
+      {/* Community Header */}
       <div style={{
         ...headerStyle,
         flexDirection: 'column',
@@ -98,6 +116,7 @@ export default function ChannelSidebar() {
             <HeaderBtn onClick={() => setInviteModalOpen(true)} title="Davet Linki"><UserPlus size={14} /></HeaderBtn>
             {isOwner && <>
               <HeaderBtn onClick={() => setChannelModalOpen(true)} title="Kanal Ekle"><Plus size={14} /></HeaderBtn>
+              <HeaderBtn onClick={() => setRoleModalOpen(true)} title="Rol Yönetimi"><Shield size={13} /></HeaderBtn>
               <HeaderBtn onClick={deleteCommunity} title="Topluluğu Sil" danger><Trash2 size={13} /></HeaderBtn>
             </>}
             {!isOwner && <HeaderBtn onClick={leaveCommunity} title="Ayrıl" danger><LogOut size={13} /></HeaderBtn>}
@@ -118,34 +137,26 @@ export default function ChannelSidebar() {
         {uncategorized.map((ch) => (
           <ChannelItem key={ch.id} channel={ch} active={ch.id === activeChannelId} isOwner={isOwner}
             onClick={() => router.push(`/app/${community.id}/${ch.id}`)}
-            onDelete={() => deleteChannel(ch.id)} />
+            onDelete={() => deleteChannel(ch.id)}
+            onEdit={() => setEditChannelId(ch.id)} />
         ))}
 
         {categorized.map((cat) => {
           const collapsed = collapsedCats.has(cat.id)
           return (
             <div key={cat.id} style={{ marginTop: 16 }}>
-              <button
-                onClick={() => toggleCat(cat.id)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 4,
-                  width: '100%', padding: '2px 6px 4px',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  color: '#5a3d45',
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#c4a0ab')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#5a3d45')}
-              >
-                {collapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
-                <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em' }}>
-                  {cat.name}
-                </span>
-              </button>
+              <CategoryHeader
+                name={cat.name}
+                collapsed={collapsed}
+                isOwner={isOwner}
+                onToggle={() => toggleCat(cat.id)}
+                onDelete={() => deleteCategory(cat.id)}
+              />
               {!collapsed && cat.channels.map((ch: Channel) => (
                 <ChannelItem key={ch.id} channel={ch} active={ch.id === activeChannelId} isOwner={isOwner}
                   onClick={() => router.push(`/app/${community.id}/${ch.id}`)}
-                  onDelete={() => deleteChannel(ch.id)} />
+                  onDelete={() => deleteChannel(ch.id)}
+                  onEdit={() => setEditChannelId(ch.id)} />
               ))}
             </div>
           )
@@ -204,6 +215,15 @@ export default function ChannelSidebar() {
       </div>
 
       <ChannelModal open={channelModalOpen} onClose={() => setChannelModalOpen(false)} communityId={community.id} />
+      <RoleModal open={roleModalOpen} onClose={() => setRoleModalOpen(false)} communityId={community.id} />
+      {editChannelId && (
+        <EditChannelModal
+          open={!!editChannelId}
+          onClose={() => setEditChannelId(null)}
+          communityId={community.id}
+          channel={community.channels.find((ch) => ch.id === editChannelId)!}
+        />
+      )}
       <InviteModal open={inviteModalOpen} onClose={() => setInviteModalOpen(false)} inviteCode={community.inviteCode} communityName={community.name} />
       <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} />
     </div>
@@ -258,8 +278,88 @@ function IconAction({ onClick, title, danger, children }: { onClick: () => void;
   )
 }
 
-function ChannelItem({ channel, active, isOwner, onClick, onDelete }: {
-  channel: Channel; active: boolean; isOwner: boolean; onClick: () => void; onDelete: () => void
+function CategoryHeader({ name, collapsed, isOwner, onToggle, onDelete }: {
+  name: string; collapsed: boolean; isOwner: boolean; onToggle: () => void; onDelete: () => void
+}) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}>
+      <button
+        onClick={onToggle}
+        style={{
+          flex: 1, display: 'flex', alignItems: 'center', gap: 4,
+          padding: '2px 6px 4px', background: 'none', border: 'none', cursor: 'pointer',
+          color: hovered ? '#c4a0ab' : '#5a3d45', transition: 'color 0.15s',
+        }}
+      >
+        {collapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+        <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em' }}>
+          {name}
+        </span>
+      </button>
+      {isOwner && hovered && (
+        <button onClick={(e) => { e.stopPropagation(); onDelete() }}
+          style={{ padding: '2px 4px', background: 'none', border: 'none', cursor: 'pointer', color: '#e85c6a', borderRadius: 4, display: 'flex' }}
+          title="Kategoriyi Sil">
+          <Trash2 size={11} />
+        </button>
+      )}
+    </div>
+  )
+}
+
+function EditChannelModal({ open, onClose, communityId, channel }: {
+  open: boolean; onClose: () => void; communityId: string; channel: Channel
+}) {
+  const [name, setName] = useState(channel.name)
+  const [topic, setTopic] = useState(channel.topic ?? '')
+  const [loading, setLoading] = useState(false)
+  const { communities, setCommunities } = useAppStore()
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      await api.patch(`/communities/${communityId}/channels/${channel.id}`, { name, topic: topic || null })
+      setCommunities(communities.map((c) => c.id === communityId
+        ? { ...c, channels: c.channels.map((ch) => ch.id === channel.id ? { ...ch, name, topic: topic || null } : ch) }
+        : c))
+      onClose()
+    } catch {
+    } finally { setLoading(false) }
+  }
+
+  if (!open) return null
+
+  const inputStyle = { background: '#10050a', border: '1px solid rgba(139,58,82,0.3)', color: '#f0e4e7' }
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: 'rgba(19,7,24,0.98)', border: '1px solid rgba(139,58,82,0.4)', borderRadius: 18, padding: '28px 28px 24px', width: 340, boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}>
+        <h3 style={{ fontWeight: 700, fontSize: '1rem', color: '#f0e4e7', marginBottom: 20 }}>Kanalı Düzenle</h3>
+        <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: '#c4a0a8', marginBottom: 6 }}>Kanal Adı</label>
+            <input value={name} onChange={e => setName(e.target.value)} className="input-base" style={{ ...inputStyle, width: '100%', padding: '10px 14px' }} required />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: '#c4a0a8', marginBottom: 6 }}>Konu</label>
+            <input value={topic} onChange={e => setTopic(e.target.value)} className="input-base" style={{ ...inputStyle, width: '100%', padding: '10px 14px' }} placeholder="Opsiyonel..." />
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+            <button type="button" onClick={onClose} className="btn-ghost" style={{ flex: 1, padding: '10px', fontSize: '0.875rem', fontFamily: 'inherit' }}>İptal</button>
+            <button type="submit" disabled={loading} className="btn-primary" style={{ flex: 1, padding: '10px', fontSize: '0.875rem' }}>Kaydet</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function ChannelItem({ channel, active, isOwner, onClick, onDelete, onEdit }: {
+  channel: Channel; active: boolean; isOwner: boolean; onClick: () => void; onDelete: () => void; onEdit: () => void
 }) {
   const [hovered, setHovered] = useState(false)
   const Icon = channel.type === 'ANNOUNCEMENT' ? Megaphone : Hash
@@ -292,21 +392,26 @@ function ChannelItem({ channel, active, isOwner, onClick, onDelete }: {
         )}
       </button>
       {isOwner && hovered && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onDelete() }}
-          style={{
-            position: 'absolute', right: 4,
-            padding: '3px', background: 'rgba(232,92,106,0.1)', border: 'none',
-            borderRadius: 4, cursor: 'pointer', color: '#e85c6a',
-            display: 'flex', alignItems: 'center',
-            transition: 'background 0.12s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(232,92,106,0.2)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(232,92,106,0.1)')}
-          title="Kanalı Sil"
-        >
-          <Trash2 size={12} />
-        </button>
+        <div style={{ position: 'absolute', right: 4, display: 'flex', gap: 2 }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit() }}
+            style={{ padding: '3px', background: 'rgba(139,58,82,0.15)', border: 'none', borderRadius: 4, cursor: 'pointer', color: '#c4a0ab', display: 'flex', alignItems: 'center', transition: 'background 0.12s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.28)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.15)')}
+            title="Kanalı Düzenle"
+          >
+            <Pencil size={11} />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete() }}
+            style={{ padding: '3px', background: 'rgba(232,92,106,0.1)', border: 'none', borderRadius: 4, cursor: 'pointer', color: '#e85c6a', display: 'flex', alignItems: 'center', transition: 'background 0.12s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(232,92,106,0.2)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(232,92,106,0.1)')}
+            title="Kanalı Sil"
+          >
+            <Trash2 size={11} />
+          </button>
+        </div>
       )}
     </div>
   )

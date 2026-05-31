@@ -26,7 +26,10 @@ export default function LandingPage() {
     <div className="lp pat">
       {/* NAV */}
       <nav className="lp-nav">
-        <button className="lp-nav-logo">🌸 AHENK</button>
+        <button className="lp-nav-logo" onClick={() => router.push(user ? '/app' : '/')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, padding: 0 }}>
+          <LandingFlower size={22} />
+          <span style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 600, fontSize: '1.125rem', color: '#f0e4e7', letterSpacing: '-0.01em' }}>ahenk</span>
+        </button>
         <div className="lp-nav-links">
           <a href="#features">Özellikler</a>
           <a href="#how">Nasıl Çalışır</a>
@@ -305,7 +308,10 @@ export default function LandingPage() {
       <footer className="lp-footer">
         <div className="lp-footer-top">
           <div>
-            <div className="lp-footer-logo">🌸 AHENK</div>
+            <div className="lp-footer-logo" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <LandingFlower size={20} />
+            <span style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 600, fontSize: '1.0625rem', color: '#f0e4e7' }}>ahenk</span>
+          </div>
             <div className="lp-footer-tagline">Topluluğunla ahenk içinde ol. Sade, hızlı ve tamamen senin kontrolünde.</div>
             <div className="lp-footer-social">
               {['𝕏', '⌥', '◎', 'in'].map((s) => <a key={s} className="lp-social-btn" href="#">{s}</a>)}
@@ -316,10 +322,27 @@ export default function LandingPage() {
           <div className="lp-footer-col"><h4>Destek</h4>{['Yardım Merkezi', 'API Belgeleri', 'Durum Sayfası', 'Güvenlik'].map((l) => <a key={l} href="#">{l}</a>)}</div>
         </div>
         <div className="lp-footer-bottom">
-          <div className="lp-footer-copy">© 2025 Ahenk. Tüm hakları saklıdır. 🌸 Türkiye&apos;den sevgiyle yapıldı.</div>
+          <div className="lp-footer-copy">© 2025 Ahenk. Tüm hakları saklıdır. Türkiye&apos;den sevgiyle yapıldı.</div>
           <div className="lp-footer-links"><a href="#">Gizlilik</a><a href="#">Kullanım Koşulları</a><a href="#">Çerezler</a></div>
         </div>
       </footer>
     </div>
+  )
+}
+
+function LandingFlower({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(12,12)">
+        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.92" transform="rotate(0)" />
+        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.88" transform="rotate(60)" />
+        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#b05a72" opacity="0.88" transform="rotate(120)" />
+        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#b05a72" opacity="0.84" transform="rotate(180)" />
+        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.84" transform="rotate(240)" />
+        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.88" transform="rotate(300)" />
+      </g>
+      <circle cx="12" cy="12" r="3.8" fill="#f5dde5" />
+      <circle cx="12" cy="12" r="2.2" fill="#f0e4e7" />
+    </svg>
   )
 }

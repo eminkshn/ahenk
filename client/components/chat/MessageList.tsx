@@ -1,21 +1,34 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Pencil, Trash2, Smile } from 'lucide-react'
+import { Pencil, Trash2, Star } from 'lucide-react'
 import { useAppStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import { getSocket } from '@/hooks/useSocket'
+import api from '@/lib/api'
 
 const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '😡']
 
 export default function MessageList({ channelId }: { channelId: string }) {
-  const { messages } = useAppStore()
+  const { messages, updateMessage } = useAppStore()
   const { user } = useAuthStore()
   const channelMessages = messages[channelId] || []
   const bottomRef = useRef<HTMLDivElement>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+
+  async function toggleStar(msg: typeof channelMessages[number]) {
+    try {
+      if (msg.starred) {
+        await api.delete(`/channels/${channelId}/messages/${msg.id}/star`)
+        updateMessage({ ...msg, starred: false })
+      } else {
+        await api.post(`/channels/${channelId}/messages/${msg.id}/star`)
+        updateMessage({ ...msg, starred: true })
+      }
+    } catch {}
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -157,6 +170,16 @@ export default function MessageList({ channelId }: { channelId: string }) {
                 boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
                 zIndex: 10,
               }}>
+                <button
+                  onClick={() => toggleStar(msg)}
+                  title={msg.starred ? 'Yıldızı kaldır' : 'Yıldızla'}
+                  style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s', color: msg.starred ? '#faa61a' : '#8a6870' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#faa61a'; e.currentTarget.style.background = 'rgba(250,166,26,0.12)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = msg.starred ? '#faa61a' : '#8a6870'; e.currentTarget.style.background = 'none' }}
+                >
+                  <Star size={13} fill={msg.starred ? '#faa61a' : 'none'} />
+                </button>
+                <div style={{ width: 1, height: 16, background: 'rgba(139,58,82,0.3)', margin: '0 2px' }} />
                 {REACTIONS.map((emoji) => (
                   <button key={emoji}
                     onClick={() => getSocket()?.emit('message:react', { messageId: msg.id, channelId, emoji })}
