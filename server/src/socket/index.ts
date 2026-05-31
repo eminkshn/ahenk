@@ -42,6 +42,15 @@ export function setupSocket(io: Server) {
 
     socket.on('channel:leave', (channelId: string) => socket.leave(`channel:${channelId}`))
 
+    socket.on('conversation:join', async (conversationId: string) => {
+      const participant = await prisma.conversationParticipant.findUnique({
+        where: { conversationId_userId: { conversationId, userId } }
+      })
+      if (participant) socket.join(`conversation:${conversationId}`)
+    })
+
+    socket.on('conversation:leave', (conversationId: string) => socket.leave(`conversation:${conversationId}`))
+
     // ─── Kanal mesajları ──────────────────────────────────────────────────────
 
     socket.on('message:send', async (data: { channelId: string; content: string }, cb?: (r: object) => void) => {

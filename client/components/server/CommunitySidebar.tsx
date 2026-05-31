@@ -20,9 +20,10 @@ export default function CommunitySidebar({ channelOpen, onToggle }: {
   const [profileModalOpen, setProfileModalOpen] = useState(false)
 
   function handleSelect(communityId: string) {
+    if (!channelOpen) onToggle()
     const community = communities.find((c) => c.id === communityId)
     const first = community?.channels.slice().sort((a, b) => a.position - b.position)[0]
-    router.push(first ? `/app/${communityId}/${first.id}` : `/app`)
+    router.push(first ? `/app/${communityId}/${first.id}` : `/app/${communityId}`)
   }
 
   const activeCommunityId = pathname.split('/')[2]

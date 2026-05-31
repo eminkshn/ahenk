@@ -23,8 +23,18 @@ export default function DMConversationPage({ params }: { params: Promise<{ conve
   useEffect(() => {
     api.get(`/conversations/${conversationId}/messages`).then(({ data }) => setMessages(conversationId, data as DMMessage[]))
     const socket = getSocket()
+    socket?.emit('conversation:join', conversationId)
     socket?.on('dm:new', (msg: DMMessage) => { if (msg.conversationId === conversationId) addMessage(msg) })
-    return () => { socket?.off('dm:new') }
+    socket?.on('dm:updated', (msg: DMMessage) => { if (msg.conversationId === conversationId) useDMStore.getState().updateMessage(msg) })
+    socket?.on('dm:deleted', ({ messageId, conversationId: cid }: { messageId: string; conversationId: string }) => {
+      if (cid === conversationId) useDMStore.getState().deleteMessage(messageId, conversationId)
+    })
+    return () => {
+      socket?.emit('conversation:leave', conversationId)
+      socket?.off('dm:new')
+      socket?.off('dm:updated')
+      socket?.off('dm:deleted')
+    }
   }, [conversationId, setMessages, addMessage])
 
   useEffect(() => {
