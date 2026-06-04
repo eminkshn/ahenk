@@ -19,7 +19,13 @@ export function useSocket() {
   const { addMessage: addDM, updateMessage: updateDM, deleteMessage: deleteDM } = useDMStore()
 
   useEffect(() => {
-    if (!accessToken || socket) return
+    if (!accessToken) {
+      // Logged out — disconnect if connected
+      if (socket) { socket.disconnect(); socket = null }
+      return
+    }
+    // Reconnect with new token (handles token refresh)
+    if (socket) { socket.disconnect(); socket = null }
 
     socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001', {
       auth: { token: accessToken }

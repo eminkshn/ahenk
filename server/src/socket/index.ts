@@ -2,6 +2,20 @@ import { Server, Socket } from 'socket.io'
 import { verifyAccess } from '../lib/jwt'
 import { prisma } from '../lib/prisma'
 
+const MAX_MSG_LEN = 2000
+
+/** Wraps an async socket handler so unhandled rejections don't crash the process */
+function safe<T>(event: string, fn: (data: T, cb?: (r: object) => void) => Promise<void>) {
+  return async (data: T, cb?: (r: object) => void) => {
+    try {
+      await fn(data, cb)
+    } catch (err) {
+      console.error(`[socket:${event}]`, err)
+      cb?.({ error: 'Sunucu hatası' })
+    }
+  }
+}
+
 export function setupSocket(io: Server) {
   io.use((socket, next) => {
     const token = socket.handshake.auth.token as string
@@ -20,17 +34,15 @@ export function setupSocket(io: Server) {
 
     await prisma.user.update({ where: { id: userId }, data: { status: 'ONLINE' } }).catch(() => {})
 
-    // Join community rooms
     const memberships = await prisma.communityMember.findMany({ where: { userId }, select: { communityId: true } })
     memberships.forEach((m: (typeof memberships)[number]) => socket.join(`community:${m.communityId}`))
 
-    // Join DM conversation rooms
     const convParticipants = await prisma.conversationParticipant.findMany({ where: { userId }, select: { conversationId: true } })
     convParticipants.forEach((p: (typeof convParticipants)[number]) => socket.join(`conversation:${p.conversationId}`))
 
     // ─── Kanal ────────────────────────────────────────────────────────────────
 
-    socket.on('channel:join', async (channelId: string) => {
+    socket.on('channel:join', safe('channel:join', async (channelId: string) => {
       const channel = await prisma.channel.findUnique({ where: { id: channelId } })
       if (!channel) return
       const member = await prisma.communityMember.findUnique({
@@ -38,23 +50,25 @@ export function setupSocket(io: Server) {
       })
       if (!member) return
       socket.join(`channel:${channelId}`)
-    })
+    }))
 
     socket.on('channel:leave', (channelId: string) => socket.leave(`channel:${channelId}`))
 
-    socket.on('conversation:join', async (conversationId: string) => {
+    socket.on('conversation:join', safe('conversation:join', async (conversationId: string) => {
       const participant = await prisma.conversationParticipant.findUnique({
         where: { conversationId_userId: { conversationId, userId } }
       })
       if (participant) socket.join(`conversation:${conversationId}`)
-    })
+    }))
 
     socket.on('conversation:leave', (conversationId: string) => socket.leave(`conversation:${conversationId}`))
 
     // ─── Kanal mesajları ──────────────────────────────────────────────────────
 
-    socket.on('message:send', async (data: { channelId: string; content: string }, cb?: (r: object) => void) => {
-      if (!data.channelId || !data.content?.trim()) { cb?.({ error: 'Geçersiz mesaj' }); return }
+    socket.on('message:send', safe('message:send', async (data: { channelId: string; content: string }, cb) => {
+      const content = data.content?.trim()
+      if (!data.channelId || !content) { cb?.({ error: 'Geçersiz mesaj' }); return }
+      if (content.length > MAX_MSG_LEN) { cb?.({ error: `Mesaj çok uzun (max ${MAX_MSG_LEN})` }); return }
 
       const channel = await prisma.channel.findUnique({ where: { id: data.channelId } })
       if (!channel) { cb?.({ error: 'Kanal bulunamadı' }); return }
@@ -64,6 +78,12 @@ export function setupSocket(io: Server) {
         include: { roles: { include: { role: { select: { permissions: true } } } } }
       })
       if (!member) { cb?.({ error: 'Yetki yok' }); return }
+
+      // Ban kontrolü
+      const ban = await prisma.communityBan.findUnique({
+        where: { communityId_userId: { communityId: channel.communityId, userId } }
+      })
+      if (ban) { cb?.({ error: 'Bu topluluktan yasaklandınız' }); return }
 
       // Yavaş mod kontrolü (adminler muaf)
       const ADMIN_BIT = 1n
@@ -82,37 +102,40 @@ export function setupSocket(io: Server) {
       }
 
       const message = await prisma.message.create({
-        data: { content: data.content.trim(), authorId: userId, channelId: data.channelId },
+        data: { content, authorId: userId, channelId: data.channelId },
         include: { author: { select: { id: true, username: true, displayName: true, avatar: true } }, reactions: true }
       })
 
       io.to(`channel:${data.channelId}`).emit('message:new', message)
       cb?.({ ok: true, message })
-    })
+    }))
 
-    socket.on('message:edit', async (data: { messageId: string; content: string }, cb?: (r: object) => void) => {
+    socket.on('message:edit', safe('message:edit', async (data: { messageId: string; content: string }, cb) => {
+      const content = data.content?.trim()
+      if (!content || content.length > MAX_MSG_LEN) { cb?.({ error: 'Geçersiz içerik' }); return }
       const message = await prisma.message.findFirst({ where: { id: data.messageId, authorId: userId } })
       if (!message) { cb?.({ error: 'Mesaj bulunamadı' }); return }
 
       const updated = await prisma.message.update({
         where: { id: data.messageId },
-        data: { content: data.content.trim(), edited: true },
+        data: { content, edited: true },
         include: { author: { select: { id: true, username: true, displayName: true, avatar: true } }, reactions: true }
       })
 
       io.to(`channel:${message.channelId}`).emit('message:updated', updated)
       cb?.({ ok: true, message: updated })
-    })
+    }))
 
-    socket.on('message:delete', async (data: { messageId: string }, cb?: (r: object) => void) => {
+    socket.on('message:delete', safe('message:delete', async (data: { messageId: string }, cb) => {
       const message = await prisma.message.findFirst({ where: { id: data.messageId, authorId: userId } })
       if (!message) { cb?.({ error: 'Mesaj bulunamadı' }); return }
       await prisma.message.delete({ where: { id: data.messageId } })
       io.to(`channel:${message.channelId}`).emit('message:deleted', { messageId: data.messageId, channelId: message.channelId })
       cb?.({ ok: true })
-    })
+    }))
 
-    socket.on('message:react', async (data: { messageId: string; emoji: string }, cb?: (r: object) => void) => {
+    socket.on('message:react', safe('message:react', async (data: { messageId: string; emoji: string }, cb) => {
+      if (!data.emoji || data.emoji.length > 10) { cb?.({ error: 'Geçersiz emoji' }); return }
       const message = await prisma.message.findUnique({ where: { id: data.messageId } })
       if (!message) { cb?.({ error: 'Mesaj bulunamadı' }); return }
 
@@ -133,12 +156,14 @@ export function setupSocket(io: Server) {
 
       io.to(`channel:${message.channelId}`).emit('message:reactions', { messageId: data.messageId, channelId: message.channelId, reactions })
       cb?.({ ok: true })
-    })
+    }))
 
     // ─── DM ───────────────────────────────────────────────────────────────────
 
-    socket.on('dm:send', async (data: { conversationId: string; content: string }, cb?: (r: object) => void) => {
-      if (!data.conversationId || !data.content?.trim()) { cb?.({ error: 'Geçersiz mesaj' }); return }
+    socket.on('dm:send', safe('dm:send', async (data: { conversationId: string; content: string }, cb) => {
+      const content = data.content?.trim()
+      if (!data.conversationId || !content) { cb?.({ error: 'Geçersiz mesaj' }); return }
+      if (content.length > MAX_MSG_LEN) { cb?.({ error: `Mesaj çok uzun (max ${MAX_MSG_LEN})` }); return }
 
       const participant = await prisma.conversationParticipant.findUnique({
         where: { conversationId_userId: { conversationId: data.conversationId, userId } }
@@ -146,39 +171,41 @@ export function setupSocket(io: Server) {
       if (!participant) { cb?.({ error: 'Yetki yok' }); return }
 
       const dm = await prisma.directMessage.create({
-        data: { content: data.content.trim(), senderId: userId, conversationId: data.conversationId },
+        data: { content, senderId: userId, conversationId: data.conversationId },
         include: { sender: { select: { id: true, username: true, displayName: true, avatar: true } } }
       })
 
       io.to(`conversation:${data.conversationId}`).emit('dm:new', dm)
       cb?.({ ok: true, message: dm })
-    })
+    }))
 
-    socket.on('dm:edit', async (data: { messageId: string; content: string }, cb?: (r: object) => void) => {
+    socket.on('dm:edit', safe('dm:edit', async (data: { messageId: string; content: string }, cb) => {
+      const content = data.content?.trim()
+      if (!content || content.length > MAX_MSG_LEN) { cb?.({ error: 'Geçersiz içerik' }); return }
       const dm = await prisma.directMessage.findFirst({ where: { id: data.messageId, senderId: userId } })
       if (!dm) { cb?.({ error: 'Mesaj bulunamadı' }); return }
 
       const updated = await prisma.directMessage.update({
         where: { id: data.messageId },
-        data: { content: data.content.trim(), edited: true },
+        data: { content, edited: true },
         include: { sender: { select: { id: true, username: true, displayName: true, avatar: true } } }
       })
 
       io.to(`conversation:${dm.conversationId}`).emit('dm:updated', updated)
       cb?.({ ok: true, message: updated })
-    })
+    }))
 
-    socket.on('dm:delete', async (data: { messageId: string }, cb?: (r: object) => void) => {
+    socket.on('dm:delete', safe('dm:delete', async (data: { messageId: string }, cb) => {
       const dm = await prisma.directMessage.findFirst({ where: { id: data.messageId, senderId: userId } })
       if (!dm) { cb?.({ error: 'Mesaj bulunamadı' }); return }
       await prisma.directMessage.delete({ where: { id: data.messageId } })
       io.to(`conversation:${dm.conversationId}`).emit('dm:deleted', { messageId: data.messageId, conversationId: dm.conversationId })
       cb?.({ ok: true })
-    })
+    }))
 
     // ─── Arkadaşlık bildirimleri ───────────────────────────────────────────────
 
-    socket.on('friend:request', async (data: { targetUserId: string }, cb?: (r: object) => void) => {
+    socket.on('friend:request', safe('friend:request', async (data: { targetUserId: string }, cb) => {
       const targetSocket = [...io.sockets.sockets.values()].find(
         (s) => s.data.userId === data.targetUserId
       )
@@ -190,7 +217,7 @@ export function setupSocket(io: Server) {
         targetSocket.emit('friend:request_received', { sender })
       }
       cb?.({ ok: true })
-    })
+    }))
 
     // ─── Disconnect ────────────────────────────────────────────────────────────
 

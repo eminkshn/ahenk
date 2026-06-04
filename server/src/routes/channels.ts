@@ -16,16 +16,21 @@ router.post('/communities/:communityId/channels', async (req: AuthRequest, res: 
   }
 
   const { name, type, topic, position, categoryId } = req.body
-  if (!name) {
-    res.status(400).json({ error: 'Kanal adı zorunludur' })
+  if (!name || typeof name !== 'string' || name.trim().length < 1 || name.trim().length > 100) {
+    res.status(400).json({ error: 'Kanal adı 1-100 karakter olmalıdır' })
+    return
+  }
+  const ALLOWED_TYPES = ['TEXT', 'ANNOUNCEMENT', 'VOICE']
+  if (type && !ALLOWED_TYPES.includes(type)) {
+    res.status(400).json({ error: 'Geçersiz kanal türü' })
     return
   }
 
   const channel = await prisma.channel.create({
     data: {
-      name,
+      name: name.trim(),
       type: type ?? 'TEXT',
-      topic: topic ?? null,
+      topic: topic ? String(topic).slice(0, 1024) : null,
       position: position ?? 0,
       communityId,
       categoryId: categoryId ?? null
@@ -40,17 +45,21 @@ router.patch('/communities/:communityId/channels/:channelId', async (req: AuthRe
   const community = await prisma.community.findFirst({
     where: { id: communityId, ownerId: req.userId! }
   })
-  if (!community) {
-    res.status(403).json({ error: 'Yetki yok' })
-    return
-  }
+  if (!community) { res.status(403).json({ error: 'Yetki yok' }); return }
+
+  // IDOR fix: verify channel belongs to this community
+  const existing = await prisma.channel.findFirst({ where: { id: channelId, communityId } })
+  if (!existing) { res.status(404).json({ error: 'Kanal bulunamadı' }); return }
 
   const { name, topic, position, categoryId } = req.body
+  if (name !== undefined && (typeof name !== 'string' || name.trim().length < 1 || name.trim().length > 100)) {
+    res.status(400).json({ error: 'Kanal adı 1-100 karakter olmalıdır' }); return
+  }
   const channel = await prisma.channel.update({
     where: { id: channelId },
     data: {
-      ...(name !== undefined && { name }),
-      ...(topic !== undefined && { topic }),
+      ...(name !== undefined && { name: String(name).trim() }),
+      ...(topic !== undefined && { topic: topic ? String(topic).slice(0, 1024) : null }),
       ...(position !== undefined && { position }),
       ...(categoryId !== undefined && { categoryId })
     }
@@ -64,10 +73,12 @@ router.delete('/communities/:communityId/channels/:channelId', async (req: AuthR
   const community = await prisma.community.findFirst({
     where: { id: communityId, ownerId: req.userId! }
   })
-  if (!community) {
-    res.status(403).json({ error: 'Yetki yok' })
-    return
-  }
+  if (!community) { res.status(403).json({ error: 'Yetki yok' }); return }
+
+  // IDOR fix: verify channel belongs to this community
+  const existing = await prisma.channel.findFirst({ where: { id: channelId, communityId } })
+  if (!existing) { res.status(404).json({ error: 'Kanal bulunamadı' }); return }
+
   await prisma.channel.delete({ where: { id: channelId } })
   res.json({ ok: true })
 })

@@ -21,8 +21,8 @@ const communityInclude = {
 
 router.post('/', async (req: AuthRequest, res: Response) => {
   const { name, description } = req.body
-  if (!name) {
-    res.status(400).json({ error: 'Topluluk adı zorunludur' })
+  if (!name || typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 100) {
+    res.status(400).json({ error: 'Topluluk adı 2-100 karakter olmalıdır' })
     return
   }
 
@@ -110,6 +110,15 @@ router.post('/join/:inviteCode', async (req: AuthRequest, res: Response) => {
     return
   }
 
+  // Ban kontrolü
+  const ban = await prisma.communityBan.findUnique({
+    where: { communityId_userId: { communityId: community.id, userId: req.userId! } }
+  })
+  if (ban) {
+    res.status(403).json({ error: 'Bu topluluktan yasaklandınız' })
+    return
+  }
+
   await prisma.communityMember.create({
     data: { userId: req.userId!, communityId: community.id }
   })
@@ -163,15 +172,19 @@ router.patch('/:id/categories/:categoryId', async (req: AuthRequest, res: Respon
   const community = await prisma.community.findFirst({
     where: { id: communityId, ownerId: req.userId! }
   })
-  if (!community) {
-    res.status(403).json({ error: 'Yetki yok' })
-    return
-  }
+  if (!community) { res.status(403).json({ error: 'Yetki yok' }); return }
+
+  // IDOR fix: verify category belongs to this community
+  const existing = await prisma.category.findFirst({ where: { id: categoryId, communityId } })
+  if (!existing) { res.status(404).json({ error: 'Kategori bulunamadı' }); return }
 
   const { name, position } = req.body
+  if (name !== undefined && (typeof name !== 'string' || name.trim().length < 1 || name.trim().length > 100)) {
+    res.status(400).json({ error: 'Kategori adı 1-100 karakter olmalıdır' }); return
+  }
   const category = await prisma.category.update({
     where: { id: categoryId },
-    data: { ...(name && { name }), ...(position !== undefined && { position }) }
+    data: { ...(name && { name: name.trim() }), ...(position !== undefined && { position }) }
   })
   res.json(category)
 })
@@ -182,10 +195,12 @@ router.delete('/:id/categories/:categoryId', async (req: AuthRequest, res: Respo
   const community = await prisma.community.findFirst({
     where: { id: communityId, ownerId: req.userId! }
   })
-  if (!community) {
-    res.status(403).json({ error: 'Yetki yok' })
-    return
-  }
+  if (!community) { res.status(403).json({ error: 'Yetki yok' }); return }
+
+  // IDOR fix: verify category belongs to this community
+  const existing = await prisma.category.findFirst({ where: { id: categoryId, communityId } })
+  if (!existing) { res.status(404).json({ error: 'Kategori bulunamadı' }); return }
+
   await prisma.category.delete({ where: { id: categoryId } })
   res.json({ ok: true })
 })
