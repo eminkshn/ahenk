@@ -67,12 +67,18 @@ export default function VoiceRoom({ roomName, onLeave }: {
     async function connect() {
       try {
         const { data } = await api.post('/voice/token', { roomName })
+        if (!data.token || !data.url) {
+          setErrorMsg('Sunucu geçerli bir token döndürmedi.')
+          setStatus('error')
+          return
+        }
         await room.connect(data.url, data.token)
         await room.localParticipant.setMicrophoneEnabled(true)
         setStatus('connected')
         sync()
-      } catch {
-        setErrorMsg('Bağlanılamadı. LiveKit yapılandırması eksik olabilir.')
+      } catch (err: unknown) {
+        const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+        setErrorMsg(msg || 'LiveKit bağlantısı kurulamadı. Railway\'de LIVEKIT_URL, LIVEKIT_API_KEY ve LIVEKIT_API_SECRET env değişkenlerini kontrol et.')
         setStatus('error')
       }
     }

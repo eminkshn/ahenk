@@ -9,7 +9,6 @@ import api from '@/lib/api'
 import ChannelModal from './ChannelModal'
 import InviteModal from './InviteModal'
 import RoleModal from './RoleModal'
-import Logo from '@/components/ui/Logo'
 
 export default function ChannelSidebar() {
   const router = useRouter()
@@ -30,13 +29,7 @@ export default function ChannelSidebar() {
   const isOwner = community?.ownerId === user?.id
 
   if (!community) {
-    return (
-      <div style={sidebarStyle}>
-        <div style={{ ...headerStyle, justifyContent: 'flex-start', paddingLeft: 16 }}>
-          <Logo size="sm" />
-        </div>
-      </div>
-    )
+    return <div style={sidebarStyle} />
   }
 
   const uncategorized = community.channels.filter((ch) => !ch.categoryId).sort((a, b) => a.position - b.position)
@@ -92,11 +85,6 @@ export default function ChannelSidebar() {
 
   return (
     <div style={sidebarStyle}>
-      {/* Logo bar */}
-      <div style={{ ...headerStyle, justifyContent: 'flex-start', paddingLeft: 16, borderBottom: '1px solid var(--border)' }}>
-        <Logo size="sm" />
-      </div>
-
       {/* Community Header */}
       <div style={{
         ...headerStyle,
