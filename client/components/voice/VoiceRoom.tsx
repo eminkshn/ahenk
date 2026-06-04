@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import {
-  Room, RoomEvent, ConnectionState,
+  Room, RoomEvent,
   type RemoteParticipant
 } from 'livekit-client'
 import { Mic, MicOff, PhoneOff } from 'lucide-react'
@@ -25,6 +25,9 @@ export default function VoiceRoom({ roomName, onLeave }: {
   const [isMuted, setIsMuted] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const roomRef = useRef<Room | null>(null)
+  // Stable ref so onLeave never triggers effect re-run
+  const onLeaveRef = useRef(onLeave)
+  useEffect(() => { onLeaveRef.current = onLeave })
 
   const sync = useCallback(() => {
     const room = roomRef.current
@@ -62,23 +65,29 @@ export default function VoiceRoom({ roomName, onLeave }: {
       RoomEvent.LocalTrackPublished,
     ]
     events.forEach((ev) => room.on(ev, sync))
-    room.on(RoomEvent.Disconnected, onLeave)
+    room.on(RoomEvent.Disconnected, () => onLeaveRef.current())
 
     async function connect() {
       try {
         const { data } = await api.post('/voice/token', { roomName })
-        if (!data.token || !data.url) {
+        if (!data?.token || !data?.url) {
           setErrorMsg('Sunucu geçerli bir token döndürmedi.')
           setStatus('error')
           return
         }
         await room.connect(data.url, data.token)
-        await room.localParticipant.setMicrophoneEnabled(true)
         setStatus('connected')
         sync()
+        // Enable mic separately — failure doesn't break the connection
+        try {
+          await room.localParticipant.setMicrophoneEnabled(true)
+          sync()
+        } catch {
+          setIsMuted(true)
+        }
       } catch (err: unknown) {
         const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
-        setErrorMsg(msg || 'LiveKit bağlantısı kurulamadı. Railway\'de LIVEKIT_URL, LIVEKIT_API_KEY ve LIVEKIT_API_SECRET env değişkenlerini kontrol et.')
+        setErrorMsg(msg || 'LiveKit bağlantısı kurulamadı. Railway\'de LIVEKIT_URL, LIVEKIT_API_KEY ve LIVEKIT_API_SECRET değişkenlerini kontrol et.')
         setStatus('error')
       }
     }
@@ -86,10 +95,11 @@ export default function VoiceRoom({ roomName, onLeave }: {
 
     return () => {
       events.forEach((ev) => room.off(ev, sync))
-      room.off(RoomEvent.Disconnected, onLeave)
       room.disconnect()
+      roomRef.current = null
     }
-  }, [roomName, sync, onLeave])
+    // Only re-run if the roomName changes — onLeave is stable via ref
+  }, [roomName, sync])
 
   async function toggleMute() {
     const room = roomRef.current
@@ -102,23 +112,23 @@ export default function VoiceRoom({ roomName, onLeave }: {
 
   function leave() {
     roomRef.current?.disconnect()
-    onLeave()
+    onLeaveRef.current()
   }
 
   if (status === 'error') return (
-    <div style={{ padding: 32, textAlign: 'center' }}>
-      <p style={{ color: '#e85c6a', marginBottom: 12, fontSize: '0.875rem' }}>{errorMsg}</p>
-      <button onClick={onLeave} style={{ color: '#c96b82', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}>Kapat</button>
+    <div style={{ padding: 32, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+      <p style={{ color: '#e85c6a', fontSize: '0.875rem', maxWidth: 320, lineHeight: 1.5 }}>{errorMsg}</p>
+      <button onClick={() => onLeaveRef.current()} style={{ color: '#c96b82', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}>Kapat</button>
     </div>
   )
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', padding: '40px 24px 32px', gap: 32 }}>
       {status === 'connecting' && (
-        <p style={{ color: '#8a6870', fontSize: '0.875rem', fontStyle: 'italic', marginBottom: 8 }}>Bağlanıyor...</p>
+        <p style={{ color: '#8a6870', fontSize: '0.875rem', fontStyle: 'italic' }}>Bağlanıyor...</p>
       )}
 
-      {/* Participants grid */}
+      {/* Participants */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, justifyContent: 'center', flex: 1, alignContent: 'center' }}>
         {participants.map((p) => (
           <div key={p.identity} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
@@ -149,8 +159,7 @@ export default function VoiceRoom({ roomName, onLeave }: {
             </span>
           </div>
         ))}
-
-        {status === 'connected' && participants.length === 1 && (
+        {status === 'connected' && participants.length <= 1 && (
           <p style={{ fontSize: '0.8125rem', color: '#5a3d45', fontStyle: 'italic', textAlign: 'center', maxWidth: 200 }}>
             Başka kimse yok. Kanalı paylaş ve arkadaşlarını bekle.
           </p>
@@ -159,22 +168,16 @@ export default function VoiceRoom({ roomName, onLeave }: {
 
       {/* Controls */}
       <div style={{
-        display: 'flex', gap: 16,
-        padding: '16px 28px',
-        background: 'rgba(6,2,8,0.8)',
-        borderRadius: 24,
+        display: 'flex', gap: 16, padding: '16px 28px',
+        background: 'rgba(6,2,8,0.8)', borderRadius: 24,
         border: '1px solid rgba(139,58,82,0.25)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}>
-        <button
-          onClick={toggleMute}
-          title={isMuted ? 'Sesi Aç (M)' : 'Sessiz (M)'}
+        <button onClick={toggleMute} title={isMuted ? 'Sesi Aç' : 'Sessiz'}
           style={{
             width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
-            background: isMuted ? '#ed4245' : 'rgba(139,58,82,0.25)',
-            color: '#f0e4e7',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.15s',
+            background: isMuted ? '#ed4245' : 'rgba(139,58,82,0.25)', color: '#f0e4e7',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'opacity 0.15s',
             boxShadow: isMuted ? '0 4px 16px rgba(237,66,69,0.4)' : 'none',
           }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
@@ -182,16 +185,12 @@ export default function VoiceRoom({ roomName, onLeave }: {
         >
           {isMuted ? <MicOff size={22} /> : <Mic size={22} />}
         </button>
-
-        <button
-          onClick={leave}
-          title="Kanaldan Ayrıl"
+        <button onClick={leave} title="Ayrıl"
           style={{
             width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
             background: '#ed4245', color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 20px rgba(237,66,69,0.5)',
-            transition: 'opacity 0.15s',
+            boxShadow: '0 4px 20px rgba(237,66,69,0.5)', transition: 'opacity 0.15s',
           }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
