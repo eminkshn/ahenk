@@ -14,19 +14,20 @@ export default function CommunitySidebar({ channelOpen, onToggle }: {
 }) {
   const router = useRouter()
   const pathname = usePathname()
-  const { communities } = useAppStore()
+  const { communities, selectedCommunityId, selectCommunity } = useAppStore()
   const { user, logout } = useAuthStore()
   const [modalOpen, setModalOpen] = useState(false)
   const [profileModalOpen, setProfileModalOpen] = useState(false)
 
   function handleSelect(communityId: string) {
     if (!channelOpen) onToggle()
+    selectCommunity(communityId)
     const community = communities.find((c) => c.id === communityId)
     const first = community?.channels.slice().sort((a, b) => a.position - b.position)[0]
-    router.push(first ? `/app/${communityId}/${first.id}` : `/app/${communityId}`)
+    router.push(first ? `/app/${communityId}/${first.id}` : `/app`)
   }
 
-  const activeCommunityId = pathname.split('/')[2]
+  const activeCommunityId = pathname.split('/')[2] || selectedCommunityId || undefined
   const isDM = pathname.startsWith('/app/dm')
 
   return (
