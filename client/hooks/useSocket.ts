@@ -5,7 +5,7 @@ import { io, Socket } from 'socket.io-client'
 import { useAuthStore } from '@/store/auth'
 import { useAppStore } from '@/store/app'
 import { useDMStore, type DMMessage } from '@/store/dm'
-import type { Message } from '@/store/app'
+import type { Message, Reaction } from '@/store/app'
 
 let socket: Socket | null = null
 
@@ -15,7 +15,7 @@ export function getSocket() {
 
 export function useSocket() {
   const { accessToken } = useAuthStore()
-  const { addMessage, updateMessage, deleteMessage } = useAppStore()
+  const { addMessage, updateMessage, updateMessageReactions, deleteMessage } = useAppStore()
   const { addMessage: addDM, updateMessage: updateDM, deleteMessage: deleteDM } = useDMStore()
 
   useEffect(() => {
@@ -30,6 +30,9 @@ export function useSocket() {
     socket.on('message:deleted', ({ messageId, channelId }: { messageId: string; channelId: string }) =>
       deleteMessage(messageId, channelId)
     )
+    socket.on('message:reactions', ({ messageId, channelId, reactions }: { messageId: string; channelId: string; reactions: Reaction[] }) =>
+      updateMessageReactions(messageId, channelId, reactions)
+    )
 
     socket.on('dm:new', (msg: DMMessage) => addDM(msg))
     socket.on('dm:updated', (msg: DMMessage) => updateDM(msg))
@@ -41,7 +44,7 @@ export function useSocket() {
       socket?.disconnect()
       socket = null
     }
-  }, [accessToken, addMessage, updateMessage, deleteMessage, addDM, updateDM, deleteDM])
+  }, [accessToken, addMessage, updateMessage, updateMessageReactions, deleteMessage, addDM, updateDM, deleteDM])
 
   return socket
 }

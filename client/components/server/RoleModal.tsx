@@ -34,10 +34,18 @@ export default function RoleModal({ open, onClose, communityId }: { open: boolea
     } catch {} finally { setLoading(false) }
   }
 
+  const ADMIN_BIT = 1
+  function roleIsAdmin(role: Role) { return (parseInt(role.permissions || '0') & ADMIN_BIT) !== 0 }
+  function toggleAdmin(role: Role) {
+    const current = parseInt(role.permissions || '0')
+    const next = roleIsAdmin(role) ? current & ~ADMIN_BIT : current | ADMIN_BIT
+    setEditingRole({ ...role, permissions: String(next) })
+  }
+
   async function updateRole(role: Role) {
     setLoading(true)
     try {
-      await api.patch(`/communities/${communityId}/roles/${role.id}`, { name: role.name, color: role.color })
+      await api.patch(`/communities/${communityId}/roles/${role.id}`, { name: role.name, color: role.color, permissions: parseInt(role.permissions || '0') })
       setCommunities(communities.map((c) => c.id === communityId
         ? { ...c, roles: c.roles.map((r) => r.id === role.id ? role : r) }
         : c))
@@ -107,6 +115,25 @@ export default function RoleModal({ open, onClose, communityId }: { open: boolea
                         style={{ width: 24, height: 24, borderRadius: '50%', background: c, border: editingRole.color === c ? '2px solid #f0e4e7' : '2px solid transparent', cursor: 'pointer' }} />
                     ))}
                   </div>
+                  {/* Permissions */}
+                  <button
+                    onClick={() => toggleAdmin(editingRole)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                      background: roleIsAdmin(editingRole) ? 'rgba(139,58,82,0.2)' : 'rgba(139,58,82,0.08)',
+                      color: roleIsAdmin(editingRole) ? '#c96b82' : '#8a6870',
+                      fontSize: '0.8125rem', transition: 'all 0.15s', textAlign: 'left',
+                    }}
+                  >
+                    <span style={{ width: 14, height: 14, borderRadius: 4, border: '2px solid', borderColor: roleIsAdmin(editingRole) ? '#c96b82' : '#5a3d45', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: roleIsAdmin(editingRole) ? '#c96b82' : 'transparent' }}>
+                      {roleIsAdmin(editingRole) && <Check size={9} color="#fff" />}
+                    </span>
+                    <span>
+                      <strong>Yönetici</strong>
+                      <span style={{ fontSize: '0.7rem', color: '#5a3d45', marginLeft: 6 }}>yavaş moddan muaf · kanal yönetimi</span>
+                    </span>
+                  </button>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button onClick={() => updateRole(editingRole)} disabled={loading} style={{ flex: 1, padding: '7px', borderRadius: 8, background: 'linear-gradient(135deg, #8b3a52, #a84f68)', color: '#f0e4e7', border: 'none', cursor: 'pointer', fontSize: '0.8125rem', fontFamily: 'inherit' }}>Kaydet</button>
                     <button onClick={() => setEditingRole(null)} style={{ padding: '7px 12px', borderRadius: 8, background: 'rgba(139,58,82,0.15)', color: '#9a7a82', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>İptal</button>
@@ -116,6 +143,9 @@ export default function RoleModal({ open, onClose, communityId }: { open: boolea
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 10, background: 'rgba(139,58,82,0.06)', border: '1px solid rgba(139,58,82,0.15)' }}>
                   <div style={{ width: 14, height: 14, borderRadius: '50%', background: role.color, flexShrink: 0 }} />
                   <span style={{ flex: 1, fontSize: '0.875rem', color: '#f0e4e7' }}>{role.name}</span>
+                  {roleIsAdmin(role) && (
+                    <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: 6, background: 'rgba(139,58,82,0.2)', color: '#c96b82', fontWeight: 600 }}>YÖNETİCİ</span>
+                  )}
                   <button onClick={() => setEditingRole({ ...role })} style={{ padding: '4px 8px', background: 'rgba(139,58,82,0.15)', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#c4a0ab', fontSize: '0.75rem', fontFamily: 'inherit' }}>Düzenle</button>
                   <button onClick={() => deleteRole(role.id)} style={{ padding: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#e85c6a', display: 'flex' }} title="Sil">
                     <Trash2 size={14} />

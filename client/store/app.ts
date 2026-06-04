@@ -8,6 +8,14 @@ export interface User {
   status?: string
 }
 
+export interface Reaction {
+  id: string
+  emoji: string
+  userId: string
+  messageId?: string
+  user?: { id: string; username: string }
+}
+
 export interface Message {
   id: string
   content: string
@@ -16,6 +24,7 @@ export interface Message {
   createdAt: string
   author: User
   starred?: boolean
+  reactions?: Reaction[]
 }
 
 export interface Channel {
@@ -79,6 +88,7 @@ interface AppState {
   setMessages: (channelId: string, messages: Message[]) => void
   addMessage: (message: Message) => void
   updateMessage: (message: Message) => void
+  updateMessageReactions: (messageId: string, channelId: string, reactions: Reaction[]) => void
   deleteMessage: (messageId: string, channelId: string) => void
 }
 
@@ -111,6 +121,12 @@ export const useAppStore = create<AppState>((set) => ({
           [message.channelId]: prev.map((m) => (m.id === message.id ? message : m))
         }
       }
+    }),
+
+  updateMessageReactions: (messageId, channelId, reactions) =>
+    set((s) => {
+      const prev = s.messages[channelId] || []
+      return { messages: { ...s.messages, [channelId]: prev.map((m) => m.id === messageId ? { ...m, reactions } : m) } }
     }),
 
   deleteMessage: (messageId, channelId) =>

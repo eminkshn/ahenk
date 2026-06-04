@@ -59,8 +59,16 @@ export function setupSocket(io: Server) {
       const channel = await prisma.channel.findUnique({ where: { id: data.channelId } })
       if (!channel) { cb?.({ error: 'Kanal bulunamadı' }); return }
 
-      // Yavaş mod kontrolü
-      if (channel.slowMode > 0) {
+      const member = await prisma.communityMember.findUnique({
+        where: { userId_communityId: { userId, communityId: channel.communityId } },
+        include: { roles: { include: { role: { select: { permissions: true } } } } }
+      })
+      if (!member) { cb?.({ error: 'Yetki yok' }); return }
+
+      // Yavaş mod kontrolü (adminler muaf)
+      const ADMIN_BIT = 1n
+      const isAdmin = member.roles.some((mr: { role: { permissions: bigint } }) => (BigInt(mr.role.permissions) & ADMIN_BIT) !== 0n)
+      if (channel.slowMode > 0 && !isAdmin) {
         const recent = await prisma.message.findFirst({
           where: { channelId: data.channelId, authorId: userId },
           orderBy: { createdAt: 'desc' }
@@ -72,11 +80,6 @@ export function setupSocket(io: Server) {
           }
         }
       }
-
-      const member = await prisma.communityMember.findUnique({
-        where: { userId_communityId: { userId, communityId: channel.communityId } }
-      })
-      if (!member) { cb?.({ error: 'Yetki yok' }); return }
 
       const message = await prisma.message.create({
         data: { content: data.content.trim(), authorId: userId, channelId: data.channelId },
@@ -128,7 +131,7 @@ export function setupSocket(io: Server) {
         include: { user: { select: { id: true, username: true } } }
       })
 
-      io.to(`channel:${message.channelId}`).emit('message:reactions', { messageId: data.messageId, reactions })
+      io.to(`channel:${message.channelId}`).emit('message:reactions', { messageId: data.messageId, channelId: message.channelId, reactions })
       cb?.({ ok: true })
     })
 

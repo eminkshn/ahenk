@@ -99,11 +99,14 @@ export default function MessageList({ channelId }: { channelId: string }) {
                 {msg.author.displayName[0].toUpperCase()}
               </div>
             ) : (
-              <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
                 {isHovered && (
                   <span style={{ fontSize: '0.625rem', color: '#5a3d45' }}>
                     {new Date(msg.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
+                )}
+                {msg.starred && !isHovered && (
+                  <span style={{ fontSize: '0.625rem', color: '#faa61a' }}>★</span>
                 )}
               </div>
             )}
@@ -118,8 +121,50 @@ export default function MessageList({ channelId }: { channelId: string }) {
                   <span style={{ fontSize: '0.7rem', color: '#5a3d45' }}>
                     {new Date(msg.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
+                  {msg.starred && (
+                    <span title="Yıldızlanan mesaj" style={{ fontSize: '0.7rem', color: '#faa61a', lineHeight: 1 }}>★</span>
+                  )}
                 </div>
               )}
+
+              {/* Reactions */}
+              {msg.reactions && msg.reactions.length > 0 && editingId !== msg.id && (() => {
+                const grouped = msg.reactions.reduce<Record<string, { emoji: string; users: string[]; userIds: string[] }>>((acc, r) => {
+                  if (!acc[r.emoji]) acc[r.emoji] = { emoji: r.emoji, users: [], userIds: [] }
+                  acc[r.emoji].users.push(r.user?.username ?? r.userId)
+                  acc[r.emoji].userIds.push(r.userId)
+                  return acc
+                }, {})
+                return (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
+                    {Object.values(grouped).map(({ emoji, users, userIds }) => {
+                      const iReacted = userIds.includes(user?.id ?? '')
+                      return (
+                        <button
+                          key={emoji}
+                          onClick={() => getSocket()?.emit('message:react', { messageId: msg.id, channelId, emoji })}
+                          title={users.join(', ')}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 4,
+                            padding: '2px 8px', borderRadius: 12,
+                            background: iReacted ? 'rgba(139,58,82,0.25)' : 'rgba(139,58,82,0.1)',
+                            border: iReacted ? '1px solid rgba(139,58,82,0.5)' : '1px solid rgba(139,58,82,0.2)',
+                            cursor: 'pointer', fontSize: '0.875rem', lineHeight: 1,
+                            transition: 'all 0.1s',
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.3)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = iReacted ? 'rgba(139,58,82,0.25)' : 'rgba(139,58,82,0.1)')}
+                        >
+                          <span>{emoji}</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: iReacted ? '#c96b82' : '#8a6870' }}>
+                            {users.length}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
 
               {editingId === msg.id ? (
                 <div style={{ marginTop: 4 }}>
