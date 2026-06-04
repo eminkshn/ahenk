@@ -3,30 +3,40 @@
   "short_name": "Ahenk",
   "description": "Topluluk iletişim platformu",
   "start_url": "/app",
+  "id": "/app",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait-primary",
   "background_color": "#060208",
   "theme_color": "#8b3a52",
   "categories": ["social", "communication"],
   "icons": [
     {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-512.png",
+      "src": "/icon",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ],
+  "screenshots": [],
   "shortcuts": [
     {
       "name": "Mesajlar",
+      "short_name": "DM",
       "url": "/app/dm",
       "description": "Direkt mesajlara git"
     }
-  ]
+  ],
+  "prefer_related_applications": false
 }
