@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, use, useState } from 'react'
+import { useEffect, use, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Hash, Megaphone, Users, Settings, Clock, Volume2 } from 'lucide-react'
 import { useAppStore } from '@/store/app'
@@ -20,8 +20,32 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
   const { user } = useAuthStore()
   const [slowModalOpen, setSlowModalOpen] = useState(false)
   const [slowInput, setSlowInput] = useState('')
-  const [showMembers, setShowMembers] = useState(true)
+  const [showMembers, setShowMembers] = useState(false) // starts hidden; desktop opens via useEffect
   const [inVoice, setInVoice] = useState(false)
+  const memberSwipeStart = useRef<{ x: number; y: number } | null>(null)
+
+  // On desktop, show members by default
+  useEffect(() => {
+    if (window.innerWidth >= 768) setShowMembers(true)
+  }, [])
+
+  function handleMemberTouchStart(e: React.TouchEvent) {
+    const x = e.touches[0].clientX
+    const y = e.touches[0].clientY
+    // Track if starting from right edge (to open) OR anywhere (to close when open)
+    if (x < window.innerWidth - 36 && !showMembers) return
+    memberSwipeStart.current = { x, y }
+  }
+
+  function handleMemberTouchEnd(e: React.TouchEvent) {
+    if (!memberSwipeStart.current) return
+    const dx = e.changedTouches[0].clientX - memberSwipeStart.current.x
+    const dy = e.changedTouches[0].clientY - memberSwipeStart.current.y
+    memberSwipeStart.current = null
+    if (Math.abs(dx) < 56 || Math.abs(dy) > 72) return
+    if (dx < 0 && !showMembers) setShowMembers(true)
+    else if (dx > 0 && showMembers) setShowMembers(false)
+  }
 
   const community = communities.find((c) => c.id === communityId)
   const channel = community?.channels.find((ch) => ch.id === channelId)
@@ -56,7 +80,11 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
   }
 
   return (
-    <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+    <div
+      style={{ display: 'flex', height: '100%', overflow: 'hidden' }}
+      onTouchStart={handleMemberTouchStart}
+      onTouchEnd={handleMemberTouchEnd}
+    >
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
         {/* Channel header */}
         <div style={{
@@ -161,7 +189,20 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
         )}
       </div>
 
-      {showMembers && <MemberList communityId={communityId} />}
+      {showMembers && (
+        <>
+          {/* Mobile backdrop */}
+          <div
+            className="md:hidden fixed inset-0 z-30"
+            style={{ background: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setShowMembers(false)}
+          />
+          {/* member-list-wrapper: display:contents on desktop, fixed right overlay on mobile */}
+          <div className="member-list-wrapper">
+            <MemberList communityId={communityId} />
+          </div>
+        </>
+      )}
 
       {/* Slow mode modal */}
       {slowModalOpen && (

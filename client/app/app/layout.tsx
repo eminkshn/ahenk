@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useAppStore } from '@/store/app'
@@ -21,7 +21,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { setCommunities } = useAppStore()
   const { setConversations } = useDMStore()
   const [channelOpen, setChannelOpen] = useState(true)
+  const swipeStart = useRef<{ x: number; y: number } | null>(null)
   useSocket()
+
+  function handleTouchStart(e: React.TouchEvent) {
+    const x = e.touches[0].clientX
+    const y = e.touches[0].clientY
+    // Track if starting from left edge (to open) OR anywhere (to close when open)
+    if (x > 36 && !channelOpen) return
+    swipeStart.current = { x, y }
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (!swipeStart.current) return
+    const dx = e.changedTouches[0].clientX - swipeStart.current.x
+    const dy = e.changedTouches[0].clientY - swipeStart.current.y
+    swipeStart.current = null
+    if (Math.abs(dx) < 56 || Math.abs(dy) > 72) return
+    if (dx > 0 && !channelOpen) setChannelOpen(true)
+    else if (dx < 0 && channelOpen) setChannelOpen(false)
+  }
 
   const isDM = pathname.startsWith('/app/dm')
 
@@ -48,7 +67,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (!user) return null
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#080305', color: '#f0e4e7', fontFamily: "'Lora', Georgia, serif" }}>
+    <div
+      className="flex h-screen overflow-hidden"
+      style={{ background: '#080305', color: '#f0e4e7', fontFamily: "'Lora', Georgia, serif" }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <Background />
       <CommunitySidebar channelOpen={channelOpen} onToggle={() => setChannelOpen(v => !v)} />
 
