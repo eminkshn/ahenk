@@ -168,23 +168,31 @@ html, body {
   border-color: var(--border-strong);
 }
 
-/* ── Mobile ──────────────────────────────────────────────────────────────── */
+/* ── Sidebar wrapper ─────────────────────────────────────────────────────── */
+/* Desktop: transparent in flex layout so sidebar is a direct flex child     */
+/* Mobile:  fixed overlay to the right of the 72px icon rail                */
+@media (min-width: 768px) {
+  .sidebar-wrapper { display: contents; }
+}
 @media (max-width: 767px) {
-  /* Prevent horizontal overflow on small screens */
-  body { overflow-x: hidden; }
-
-  /* Channel / DM sidebar: full-screen overlay on mobile (positioned via inline left:72px) */
-  /* Already handled by fixed positioning in layout — width cap */
-  .channel-sidebar-inner { max-width: calc(100vw - 72px); }
-
-  /* Modal: full-width on small screens */
-  .animate-scale-in {
-    border-radius: 16px !important;
+  .sidebar-wrapper {
+    position: fixed;
+    left: 72px;
+    top: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    max-width: calc(100vw - 72px);
   }
+}
+
+/* ── Mobile misc ─────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  body { overflow-x: hidden; }
 }
 
 /* Touch-friendly tap targets */
 @media (hover: none) and (pointer: coarse) {
   button { min-height: 40px; }
-  input, textarea { font-size: 16px; } /* prevent iOS zoom */
+  input, textarea { font-size: 16px; }
 }

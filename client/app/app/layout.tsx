@@ -60,8 +60,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             style={{ background: 'rgba(0,0,0,0.55)' }}
             onClick={() => setChannelOpen(false)}
           />
-          {/* Sidebar: overlay on mobile, inline on desktop */}
-          <div className="fixed md:static top-0 bottom-0 md:top-auto md:bottom-auto z-40 md:z-auto" style={{ left: 72 }}>
+          {/* sidebar-wrapper: display:contents on desktop (direct flex child),
+              position:fixed overlay on mobile — see globals.css */}
+          <div className="sidebar-wrapper">
             {isDM ? <DMSidebar /> : <ChannelSidebar />}
           </div>
         </>

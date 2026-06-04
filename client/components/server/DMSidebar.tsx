@@ -14,6 +14,15 @@ export default function DMSidebar() {
 
   const activeId = pathname.split('/')[3]
 
+  // Deduplicate: one entry per other participant (keep most recent)
+  const seen = new Set<string>()
+  const uniqueConversations = conversations.filter((conv) => {
+    const other = conv.participants.find((p) => p.userId !== user?.id)
+    if (!other || seen.has(other.userId)) return false
+    seen.add(other.userId)
+    return true
+  })
+
   return (
     <div className="w-60 flex flex-col shrink-0" style={surface}>
       <div className="h-12 px-4 flex items-center shrink-0" style={{ borderBottom: '1px solid rgba(139,58,82,0.15)' }}>
@@ -35,13 +44,13 @@ export default function DMSidebar() {
           <span className="font-medium">Arkadaşlar</span>
         </button>
 
-        {conversations.length > 0 && (
+        {uniqueConversations.length > 0 && (
           <p className="px-2 mt-3 mb-1.5 text-xs font-semibold uppercase tracking-widest" style={{ color: '#7a5a62' }}>
             Mesajlar
           </p>
         )}
 
-        {conversations.map((conv) => {
+        {uniqueConversations.map((conv) => {
           const other = conv.participants.find((p) => p.userId !== user?.id)
           if (!other) return null
           const active = conv.id === activeId

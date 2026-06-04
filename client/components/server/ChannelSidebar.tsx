@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Hash, Megaphone, ChevronDown, ChevronRight, UserPlus, Plus, Trash2, LogOut, Pencil, Shield } from 'lucide-react'
-import { useAppStore, type Channel, type Category } from '@/store/app'
+import { useAppStore, type Channel, type Category, type Community } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import api from '@/lib/api'
 import ChannelModal from './ChannelModal'
@@ -14,7 +14,7 @@ import Logo from '@/components/ui/Logo'
 export default function ChannelSidebar() {
   const router = useRouter()
   const pathname = usePathname()
-  const { communities, setCommunities } = useAppStore()
+  const { communities, setCommunities, selectedCommunityId } = useAppStore()
   const { user } = useAuthStore()
   const [channelModalOpen, setChannelModalOpen] = useState(false)
   const [editChannelId, setEditChannelId] = useState<string | null>(null)
@@ -23,10 +23,10 @@ export default function ChannelSidebar() {
   const [collapsedCats, setCollapsedCats] = useState<Set<string>>(new Set())
 
   const parts = pathname.split('/')
-  const activeCommunityId = parts[2]
+  const activeCommunityId = parts[2] || selectedCommunityId || undefined
   const activeChannelId = parts[3]
 
-  const community = communities.find((c) => c.id === activeCommunityId)
+  const community = communities.find((c) => c.id === activeCommunityId) as Community | undefined
   const isOwner = community?.ownerId === user?.id
 
   if (!community) {
