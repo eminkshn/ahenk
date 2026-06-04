@@ -75,7 +75,7 @@ function CreateStep({ onClose, onBack }: { onClose: () => void; onBack: () => vo
       addCommunity(data as Community)
       const firstChannel = (data as Community).channels[0]
       onClose()
-      router.push(firstChannel ? `/app/${data.id}/${firstChannel.id}` : `/app/${data.id}`)
+      router.push(firstChannel ? `/app/${data.id}/${firstChannel.id}` : `/app`)
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string } } }
       setError(e.response?.data?.error || 'Bir hata oluştu')
@@ -146,8 +146,9 @@ function JoinStep({ onClose, onBack }: { onClose: () => void; onBack: () => void
     try {
       const { data } = await api.post(`/communities/join/${trimmed}`)
       if (!communities.find((c) => c.id === data.id)) addCommunity(data as Community)
+      const firstCh = (data as Community).channels?.[0]
       onClose()
-      router.push(`/app/${data.id}`)
+      router.push(firstCh ? `/app/${data.id}/${firstCh.id}` : `/app`)
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string } } }
       setError(e.response?.data?.error || 'Geçersiz davet kodu')

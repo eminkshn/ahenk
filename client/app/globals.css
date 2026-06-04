@@ -167,3 +167,24 @@ html, body {
   color: var(--text-primary);
   border-color: var(--border-strong);
 }
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Prevent horizontal overflow on small screens */
+  body { overflow-x: hidden; }
+
+  /* Channel / DM sidebar: full-screen overlay on mobile (positioned via inline left:72px) */
+  /* Already handled by fixed positioning in layout — width cap */
+  .channel-sidebar-inner { max-width: calc(100vw - 72px); }
+
+  /* Modal: full-width on small screens */
+  .animate-scale-in {
+    border-radius: 16px !important;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (hover: none) and (pointer: coarse) {
+  button { min-height: 40px; }
+  input, textarea { font-size: 16px; } /* prevent iOS zoom */
+}

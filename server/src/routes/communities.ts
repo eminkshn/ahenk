@@ -32,7 +32,8 @@ router.post('/', async (req: AuthRequest, res: Response) => {
       description,
       ownerId: req.userId!,
       members: { create: { userId: req.userId! } },
-      roles: { create: { name: '@everyone', permissions: BigInt(0), position: 0 } }
+      roles: { create: { name: '@everyone', permissions: BigInt(0), position: 0 } },
+      channels: { create: { name: 'genel', type: 'TEXT', position: 0 } },
     },
     include: communityInclude
   })
