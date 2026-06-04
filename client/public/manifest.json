@@ -1,0 +1,32 @@
+{
+  "name": "Ahenk",
+  "short_name": "Ahenk",
+  "description": "Topluluk iletişim platformu",
+  "start_url": "/app",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#060208",
+  "theme_color": "#8b3a52",
+  "categories": ["social", "communication"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mesajlar",
+      "url": "/app/dm",
+      "description": "Direkt mesajlara git"
+    }
+  ]
+}

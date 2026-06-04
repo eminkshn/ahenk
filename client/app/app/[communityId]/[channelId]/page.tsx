@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, use, useState } from 'react'
-import { Hash, Megaphone, Users, Settings, Clock } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { Hash, Megaphone, Users, Settings, Clock, Volume2 } from 'lucide-react'
 import { useAppStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import { getSocket } from '@/hooks/useSocket'
@@ -11,6 +12,8 @@ import MessageInput from '@/components/chat/MessageInput'
 import MemberList from '@/components/server/MemberList'
 import type { Message } from '@/store/app'
 
+const VoiceRoom = dynamic(() => import('@/components/voice/VoiceRoom'), { ssr: false })
+
 export default function ChannelPage({ params }: { params: Promise<{ communityId: string; channelId: string }> }) {
   const { communityId, channelId } = use(params)
   const { communities, setMessages, selectCommunity, selectChannel, setCommunities } = useAppStore()
@@ -18,11 +21,13 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
   const [slowModalOpen, setSlowModalOpen] = useState(false)
   const [slowInput, setSlowInput] = useState('')
   const [showMembers, setShowMembers] = useState(true)
+  const [inVoice, setInVoice] = useState(false)
 
   const community = communities.find((c) => c.id === communityId)
   const channel = community?.channels.find((ch) => ch.id === channelId)
   const isOwner = community?.ownerId === user?.id
-  const ChannelIcon = channel?.type === 'ANNOUNCEMENT' ? Megaphone : Hash
+  const isVoice = channel?.type === 'VOICE'
+  const ChannelIcon = channel?.type === 'ANNOUNCEMENT' ? Megaphone : isVoice ? Volume2 : Hash
 
   useEffect(() => {
     selectCommunity(communityId)
@@ -124,8 +129,36 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
           </div>
         </div>
 
-        <MessageList channelId={channelId} />
-        <MessageInput channelId={channelId} />
+        {isVoice ? (
+          inVoice ? (
+            <VoiceRoom roomName={`channel-${channelId}`} onLeave={() => setInVoice(false)} />
+          ) : (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+              <Volume2 size={48} style={{ color: '#5a3d45' }} />
+              <p style={{ color: '#8a6870', fontSize: '0.9375rem' }}>Ses kanalına katıl</p>
+              <button
+                onClick={() => setInVoice(true)}
+                style={{
+                  padding: '12px 28px', borderRadius: 14,
+                  background: 'linear-gradient(135deg, #8b3a52, #b04e6a)',
+                  color: '#f0e4e7', border: 'none', cursor: 'pointer',
+                  fontSize: '0.9375rem', fontWeight: 600, fontFamily: 'inherit',
+                  boxShadow: '0 4px 20px rgba(139,58,82,0.45)',
+                  transition: 'opacity 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >
+                Kanala Katıl
+              </button>
+            </div>
+          )
+        ) : (
+          <>
+            <MessageList channelId={channelId} />
+            <MessageInput channelId={channelId} />
+          </>
+        )}
       </div>
 
       {showMembers && <MemberList communityId={communityId} />}

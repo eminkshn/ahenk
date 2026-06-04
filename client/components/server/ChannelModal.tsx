@@ -90,6 +90,7 @@ export default function ChannelModal({
                 className={inputCls} style={inputStyle} onFocus={focusOn} onBlur={focusOff}>
                 <option value="TEXT"># Metin</option>
                 <option value="ANNOUNCEMENT">📢 Duyuru</option>
+                <option value="VOICE">🔊 Ses</option>
               </select>
             </div>
             <div>

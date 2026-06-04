@@ -133,6 +133,7 @@ model Channel {
 enum ChannelType {
   TEXT
   ANNOUNCEMENT
+  VOICE
 }
 
 // ─── Mesaj ────────────────────────────────────────────────────────────────────

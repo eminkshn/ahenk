@@ -1,10 +1,14 @@
 'use client'
 
 import { useEffect, use, useState, useRef } from 'react'
+import dynamic from 'next/dynamic'
+import { Phone, PhoneOff } from 'lucide-react'
 import { getSocket } from '@/hooks/useSocket'
 import { useDMStore, type DMMessage } from '@/store/dm'
 import { useAuthStore } from '@/store/auth'
 import api from '@/lib/api'
+
+const VoiceRoom = dynamic(() => import('@/components/voice/VoiceRoom'), { ssr: false })
 
 export default function DMConversationPage({ params }: { params: Promise<{ conversationId: string }> }) {
   const { conversationId } = use(params)
@@ -13,6 +17,7 @@ export default function DMConversationPage({ params }: { params: Promise<{ conve
   const [content, setContent] = useState('')
   const [sending, setSending] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [inCall, setInCall] = useState(false)
   const [editContent, setEditContent] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -58,7 +63,34 @@ export default function DMConversationPage({ params }: { params: Promise<{ conve
         </div>
         <span className="font-semibold text-sm" style={{ color: '#f0e4e7' }}>{other?.user.displayName ?? 'DM'}</span>
         <span className="text-xs" style={{ color: '#7a5a62' }}>@{other?.user.username}</span>
+        <div style={{ marginLeft: 'auto' }}>
+          <button
+            onClick={() => setInCall(v => !v)}
+            title={inCall ? 'Aramayı Bitir' : 'Sesli Ara'}
+            style={{
+              padding: '5px 10px', borderRadius: 8, border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 5,
+              background: inCall ? '#ed4245' : 'rgba(139,58,82,0.15)',
+              color: inCall ? '#fff' : '#c96b82',
+              fontSize: '0.75rem', fontWeight: 600, fontFamily: 'inherit',
+              transition: 'all 0.15s',
+            }}
+          >
+            {inCall ? <PhoneOff size={13} /> : <Phone size={13} />}
+            {inCall ? 'Bitir' : 'Sesli Ara'}
+          </button>
+        </div>
       </div>
+
+      {/* Voice call panel */}
+      {inCall && (
+        <div style={{
+          height: 220, borderBottom: '1px solid rgba(139,58,82,0.2)',
+          background: 'rgba(6,2,8,0.7)', flexShrink: 0,
+        }}>
+          <VoiceRoom roomName={`dm-${conversationId}`} onLeave={() => setInCall(false)} />
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4">

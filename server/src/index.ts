@@ -11,6 +11,7 @@ import usersRouter from './routes/users'
 import friendsRouter from './routes/friends'
 import conversationsRouter from './routes/conversations'
 import moderationRouter from './routes/moderation'
+import voiceRouter from './routes/voice'
 import { setupSocket } from './socket'
 import { prisma } from './lib/prisma'
 
@@ -49,6 +50,7 @@ app.use('/api/users', usersRouter)
 app.use('/api/friends', friendsRouter)
 app.use('/api/conversations', conversationsRouter)
 app.use('/api', moderationRouter)
+app.use('/api/voice', voiceRouter)
 
 app.get('/health', (_req, res) => res.json({ ok: true }))
 

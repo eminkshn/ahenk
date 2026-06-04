@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { Hash, Megaphone, ChevronDown, ChevronRight, UserPlus, Plus, Trash2, LogOut, Pencil, Shield } from 'lucide-react'
+import { Hash, Megaphone, Volume2, ChevronDown, ChevronRight, UserPlus, Plus, Trash2, LogOut, Pencil, Shield } from 'lucide-react'
 import { useAppStore, type Channel, type Category, type Community } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import api from '@/lib/api'
@@ -307,7 +307,7 @@ function ChannelItem({ channel, active, isOwner, onClick, onDelete, onEdit }: {
   channel: Channel; active: boolean; isOwner: boolean; onClick: () => void; onDelete: () => void; onEdit: () => void
 }) {
   const [hovered, setHovered] = useState(false)
-  const Icon = channel.type === 'ANNOUNCEMENT' ? Megaphone : Hash
+  const Icon = channel.type === 'ANNOUNCEMENT' ? Megaphone : channel.type === 'VOICE' ? Volume2 : Hash
 
   return (
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
