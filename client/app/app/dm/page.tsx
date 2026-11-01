@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { MessageCircle, UserMinus } from 'lucide-react'
 import api from '@/lib/api'
 import { useFriendsStore, type FriendUser, type FriendRequest } from '@/store/friends'
 import { useDMStore } from '@/store/dm'
@@ -16,6 +17,7 @@ export default function DMPage() {
   const [addInput, setAddInput] = useState('')
   const [addError, setAddError] = useState('')
   const [addSuccess, setAddSuccess] = useState('')
+  const [dmError, setDmError] = useState('')
 
   useEffect(() => {
     api.get('/friends').then(({ data }) => setFriends(data))
@@ -50,9 +52,15 @@ export default function DMPage() {
   }
 
   async function startDM(userId: string) {
-    const { data } = await api.post('/conversations', { userId })
-    addConversation(data)
-    router.push(`/app/dm/${data.id}`)
+    setDmError('')
+    try {
+      const { data } = await api.post('/conversations', { userId })
+      addConversation(data)
+      router.push(`/app/dm/${data.id}`)
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } }
+      setDmError(e.response?.data?.error || 'Sohbet başlatılamadı, tekrar dene')
+    }
   }
 
   return (
@@ -115,11 +123,14 @@ export default function DMPage() {
             {friends.length === 0 && (
               <p className="text-sm text-center py-10 italic" style={{ color: '#7C838F' }}>Henüz arkadaşın yok</p>
             )}
+            {dmError && <p className="text-xs mb-2" style={{ color: '#FF8A7A' }}>{dmError}</p>}
+            {/* Satırın tamamı sohbeti açar; dokunmatikte hover olmadığı için düğmeler hep görünür */}
             {friends.map((f: FriendUser) => (
               <div
                 key={f.id}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl group transition-all cursor-default"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer"
                 style={{ background: 'transparent' }}
+                onClick={() => startDM(f.id)}
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(79,209,165,0.08)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
@@ -131,18 +142,17 @@ export default function DMPage() {
                   <p className="font-medium text-sm" style={{ color: '#E8EAEE' }}>{f.displayName}</p>
                   <p className="text-xs" style={{ color: '#7C838F' }}>@{f.username}</p>
                 </div>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => startDM(f.id)} title="Mesaj gönder"
-                    className="text-xl transition-colors" style={{ color: '#9AA1AD' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = '#4FD1A5')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = '#9AA1AD')}>
-                    💬
+                <div className="flex gap-1">
+                  <button onClick={(e) => { e.stopPropagation(); startDM(f.id) }} title="Mesaj gönder" aria-label="Mesaj gönder"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: 'rgba(79,209,165,0.12)', color: '#4FD1A5' }}>
+                    <MessageCircle size={18} />
                   </button>
-                  <button onClick={() => removeFriendship(f.id)} title="Arkadaşlıktan çıkar"
-                    className="text-sm transition-colors" style={{ color: '#9AA1AD' }}
+                  <button onClick={(e) => { e.stopPropagation(); removeFriendship(f.id) }} title="Arkadaşlıktan çıkar" aria-label="Arkadaşlıktan çıkar"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors" style={{ color: '#7C838F' }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = '#FF8A7A')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = '#9AA1AD')}>
-                    ✕
+                    onMouseLeave={(e) => (e.currentTarget.style.color = '#7C838F')}>
+                    <UserMinus size={18} />
                   </button>
                 </div>
               </div>

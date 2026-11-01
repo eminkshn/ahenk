@@ -9,6 +9,7 @@ import { useDMStore } from '@/store/dm'
 import CommunityModal from './CommunityModal'
 import ProfileModal from '@/components/ui/ProfileModal'
 import { LogoMark } from '@/components/ui/Logo'
+import { disablePush } from '@/lib/push'
 
 export default function CommunitySidebar({ channelOpen, onToggle }: {
   channelOpen: boolean
@@ -159,7 +160,7 @@ export default function CommunitySidebar({ channelOpen, onToggle }: {
       </button>
 
       <button
-        onClick={() => { logout(); router.push('/login') }}
+        onClick={async () => { await disablePush(); logout(); router.push('/login') }}
         title="Çıkış Yap"
         style={{
           width: 40, height: 40, marginTop: 4,

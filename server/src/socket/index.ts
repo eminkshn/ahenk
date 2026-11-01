@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io'
 import { verifyAccess } from '../lib/jwt'
 import { prisma } from '../lib/prisma'
+import { notifyUsers } from '../lib/push'
 
 const MAX_MSG_LEN = 2000
 
@@ -33,6 +34,13 @@ export function setupSocket(io: Server) {
     const userId = socket.data.userId as string
 
     await prisma.user.update({ where: { id: userId }, data: { status: 'ONLINE' } }).catch(() => {})
+
+    // Kullanıcının tüm sekmelerine/cihazlarına ulaşmak için kişisel oda
+    socket.join(`user:${userId}`)
+
+    // Uygulama ekranda mı? Ekrandaysa push gönderilmez (istemci bildirir)
+    socket.data.visible = true
+    socket.on('client:visibility', (visible: boolean) => { socket.data.visible = visible === true })
 
     const memberships = await prisma.communityMember.findMany({ where: { userId }, select: { communityId: true } })
     memberships.forEach((m: (typeof memberships)[number]) => socket.join(`community:${m.communityId}`))
@@ -108,6 +116,23 @@ export function setupSocket(io: Server) {
 
       io.to(`channel:${data.channelId}`).emit('message:new', message)
       cb?.({ ok: true, message })
+
+      // Kanalda yalnızca @kullanıcıadı ile anılanlara bildirim gider
+      const mentioned = [...content.matchAll(/@([\p{L}\p{N}_.-]+)/gu)].map((m) => m[1])
+      if (mentioned.length > 0) {
+        const targets = await prisma.communityMember.findMany({
+          where: { communityId: channel.communityId, user: { username: { in: mentioned } }, userId: { not: userId } },
+          select: { userId: true, community: { select: { name: true } } }
+        })
+        if (targets.length > 0) {
+          notifyUsers(io, targets.map((t: (typeof targets)[number]) => t.userId), {
+            title: `#${channel.name} · ${targets[0].community.name}`,
+            body: `${message.author.displayName}: ${content}`,
+            url: `/app/${channel.communityId}/${channel.id}`,
+            tag: `channel:${channel.id}`,
+          }).catch((err) => console.error('[push:mention]', err))
+        }
+      }
     }))
 
     socket.on('message:edit', safe('message:edit', async (data: { messageId: string; content: string }, cb) => {
@@ -170,6 +195,15 @@ export function setupSocket(io: Server) {
       })
       if (!participant) { cb?.({ error: 'Yetki yok' }); return }
 
+      // Konuşma, katılımcılar bağlandıktan sonra açılmış olabilir: ilk mesaj karşı tarafa
+      // da gitsin diye iki tarafın açık bağlantılarını konuşma odasına ekle
+      const participants = await prisma.conversationParticipant.findMany({
+        where: { conversationId: data.conversationId }, select: { userId: true }
+      })
+      participants.forEach((p: (typeof participants)[number]) =>
+        io.in(`user:${p.userId}`).socketsJoin(`conversation:${data.conversationId}`)
+      )
+
       const dm = await prisma.directMessage.create({
         data: { content, senderId: userId, conversationId: data.conversationId },
         include: { sender: { select: { id: true, username: true, displayName: true, avatar: true } } }
@@ -177,6 +211,13 @@ export function setupSocket(io: Server) {
 
       io.to(`conversation:${data.conversationId}`).emit('dm:new', dm)
       cb?.({ ok: true, message: dm })
+
+      notifyUsers(io, participants.map((p: (typeof participants)[number]) => p.userId).filter((id: string) => id !== userId), {
+        title: dm.sender.displayName,
+        body: content,
+        url: `/app/dm/${data.conversationId}`,
+        tag: `dm:${data.conversationId}`,
+      }).catch((err) => console.error('[push:dm]', err))
     }))
 
     socket.on('dm:edit', safe('dm:edit', async (data: { messageId: string; content: string }, cb) => {

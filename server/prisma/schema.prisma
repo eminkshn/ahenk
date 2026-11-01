@@ -33,6 +33,20 @@ model User {
   bans             CommunityBan[]            @relation("BannedUser")
   issuedBans       CommunityBan[]            @relation("BannedBy")
   starredMessages  StarredMessage[]
+  pushSubscriptions PushSubscription[]
+}
+
+// Web Push aboneliği: her tarayıcı/cihaz bir kayıt
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 enum UserStatus {

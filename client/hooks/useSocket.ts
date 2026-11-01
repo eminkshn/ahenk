@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/auth'
 import { useAppStore } from '@/store/app'
 import { useDMStore, type DMMessage } from '@/store/dm'
 import type { Message, Reaction } from '@/store/app'
+import api from '@/lib/api'
 
 let socket: Socket | null = null
 
@@ -31,6 +32,11 @@ export function useSocket() {
       auth: { token: accessToken }
     })
 
+    // Sunucu, uygulama ekranda değilken push gönderir
+    const reportVisibility = () => socket?.emit('client:visibility', document.visibilityState === 'visible')
+    socket.on('connect', reportVisibility)
+    document.addEventListener('visibilitychange', reportVisibility)
+
     socket.on('message:new', (msg: Message) => addMessage(msg))
     socket.on('message:updated', (msg: Message) => updateMessage(msg))
     socket.on('message:deleted', ({ messageId, channelId }: { messageId: string; channelId: string }) =>
@@ -40,13 +46,20 @@ export function useSocket() {
       updateMessageReactions(messageId, channelId, reactions)
     )
 
-    socket.on('dm:new', (msg: DMMessage) => addDM(msg))
+    socket.on('dm:new', (msg: DMMessage) => {
+      addDM(msg)
+      // Yeni açılmış bir konuşmadan gelen ilk mesaj: listeyi yenile ki kenar çubuğunda görünsün
+      if (!useDMStore.getState().conversations.some((c) => c.id === msg.conversationId)) {
+        api.get('/conversations').then(({ data }) => useDMStore.getState().setConversations(data)).catch(() => {})
+      }
+    })
     socket.on('dm:updated', (msg: DMMessage) => updateDM(msg))
     socket.on('dm:deleted', ({ messageId, conversationId }: { messageId: string; conversationId: string }) =>
       deleteDM(messageId, conversationId)
     )
 
     return () => {
+      document.removeEventListener('visibilitychange', reportVisibility)
       socket?.disconnect()
       socket = null
     }

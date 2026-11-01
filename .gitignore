@@ -33,3 +33,11 @@ client/next-env.d.ts
 # Expo
 mobile/.expo/
 mobile/dist/
+
+# next-pwa build çıktıları (Vercel her build'de yeniden üretir)
+client/public/sw.js
+client/public/sw.js.map
+client/public/workbox-*.js
+client/public/worker-*.js
+client/public/swe-worker-*.js
+client/public/fallback-*.js

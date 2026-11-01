@@ -12,6 +12,7 @@ import friendsRouter from './routes/friends'
 import conversationsRouter from './routes/conversations'
 import moderationRouter from './routes/moderation'
 import voiceRouter from './routes/voice'
+import pushRouter from './routes/push'
 import { setupSocket } from './socket'
 import { prisma } from './lib/prisma'
 
@@ -19,7 +20,7 @@ const app = express()
 const httpServer = createServer(app)
 const allowedOrigins = (process.env.CLIENT_URL || '')
   .split(',')
-  .map((o) => o.trim())
+  .map((o) => o.trim().replace(/\/+$/, '')) // tarayıcı Origin'i sonda "/" olmadan gönderir
   .filter(Boolean)
 
 const corsOptions = {
@@ -44,6 +45,8 @@ app.use(cors(corsOptions))
 app.use(express.json())
 
 app.use('/api/auth', authRouter)
+// '/api' altına bağlanan router'lar her yola kimlik doğrulaması koyduğu için önce gelmeli
+app.use('/api/push', pushRouter)
 app.use('/api/communities', communityRouter)
 app.use('/api', channelRouter)
 app.use('/api/users', usersRouter)

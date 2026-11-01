@@ -11,6 +11,7 @@ import CommunitySidebar from '@/components/server/CommunitySidebar'
 import ChannelSidebar from '@/components/server/ChannelSidebar'
 import DMSidebar from '@/components/server/DMSidebar'
 import { Background } from '@/components/ui/Background'
+import NotificationPrompt from '@/components/ui/NotificationPrompt'
 import type { Community } from '@/store/app'
 import type { Conversation } from '@/store/dm'
 
@@ -93,6 +94,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       )}
 
       <main className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <NotificationPrompt />
         {children}
       </main>
     </div>
