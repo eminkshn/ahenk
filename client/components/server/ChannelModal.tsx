@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Modal from '@/components/ui/Modal'
 import api from '@/lib/api'
 import { useAppStore } from '@/store/app'
+import { useIsStandalone } from '@/hooks/useStandalone'
 
 type Mode = 'channel' | 'category'
 
@@ -24,6 +25,7 @@ export default function ChannelModal({
   const [error, setError] = useState('')
   const { communities, setCommunities } = useAppStore()
   const community = communities.find((c) => c.id === communityId)
+  const voiceDisabled = useIsStandalone() // PWA'da ses kanalı seçeneği gizli
 
   function handleClose() {
     setForm({ name: '', type: 'TEXT', categoryId: '', topic: '' })
@@ -88,9 +90,9 @@ export default function ChannelModal({
               <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#C9CDD4' }}>Kanal Türü</label>
               <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
                 className={inputCls} style={inputStyle} onFocus={focusOn} onBlur={focusOff}>
-                <option value="TEXT"># Metin</option>
-                <option value="ANNOUNCEMENT">📢 Duyuru</option>
-                <option value="VOICE">🔊 Ses</option>
+                <option value="TEXT">Metin kanalı</option>
+                <option value="ANNOUNCEMENT">Duyuru kanalı</option>
+                {!voiceDisabled && <option value="VOICE">Ses kanalı</option>}
               </select>
             </div>
             <div>

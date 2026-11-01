@@ -2,10 +2,12 @@
 
 import { useEffect, use, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Phone, PhoneOff } from 'lucide-react'
+import { Phone, PhoneOff, Send } from 'lucide-react'
+import EmojiPicker from '@/components/ui/EmojiPicker'
 import { getSocket } from '@/hooks/useSocket'
 import { useDMStore, type DMMessage } from '@/store/dm'
 import { useAuthStore } from '@/store/auth'
+import { useIsStandalone } from '@/hooks/useStandalone'
 import api from '@/lib/api'
 
 const VoiceRoom = dynamic(() => import('@/components/voice/VoiceRoom'), { ssr: false })
@@ -20,6 +22,7 @@ export default function DMConversationPage({ params }: { params: Promise<{ conve
   const [inCall, setInCall] = useState(false)
   const [editContent, setEditContent] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
+  const voiceDisabled = useIsStandalone() // PWA'da sesli arama kapalı
 
   const conversation = conversations.find((c) => c.id === conversationId)
   const other = conversation?.participants.find((p) => p.userId !== user?.id)
@@ -63,27 +66,29 @@ export default function DMConversationPage({ params }: { params: Promise<{ conve
         </div>
         <span className="font-semibold text-sm" style={{ color: '#E8EAEE' }}>{other?.user.displayName ?? 'DM'}</span>
         <span className="text-xs" style={{ color: '#7C838F' }}>@{other?.user.username}</span>
-        <div style={{ marginLeft: 'auto' }}>
-          <button
-            onClick={() => setInCall(v => !v)}
-            title={inCall ? 'Aramayı Bitir' : 'Sesli Ara'}
-            style={{
-              padding: '5px 10px', borderRadius: 8, border: 'none', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 5,
-              background: inCall ? '#FF8A7A' : 'rgba(79,209,165,0.15)',
-              color: inCall ? '#2A0E09' : '#4FD1A5',
-              fontSize: '0.75rem', fontWeight: 600, fontFamily: 'inherit',
-              transition: 'all 0.15s',
-            }}
-          >
-            {inCall ? <PhoneOff size={13} /> : <Phone size={13} />}
-            {inCall ? 'Bitir' : 'Sesli Ara'}
-          </button>
-        </div>
+        {!voiceDisabled && (
+          <div style={{ marginLeft: 'auto' }}>
+            <button
+              onClick={() => setInCall(v => !v)}
+              title={inCall ? 'Aramayı Bitir' : 'Sesli Ara'}
+              style={{
+                padding: '5px 10px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 5,
+                background: inCall ? '#FF8A7A' : 'rgba(79,209,165,0.15)',
+                color: inCall ? '#2A0E09' : '#4FD1A5',
+                fontSize: '0.75rem', fontWeight: 600, fontFamily: 'inherit',
+                transition: 'all 0.15s',
+              }}
+            >
+              {inCall ? <PhoneOff size={13} /> : <Phone size={13} />}
+              {inCall ? 'Bitir' : 'Sesli Ara'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Voice call panel */}
-      {inCall && (
+      {!voiceDisabled && inCall && (
         <div style={{
           height: 220, borderBottom: '1px solid rgba(79,209,165,0.2)',
           background: 'rgba(15,17,21,0.7)', flexShrink: 0,
@@ -97,7 +102,7 @@ export default function DMConversationPage({ params }: { params: Promise<{ conve
         {dmMessages.length === 0 && (
           <div className="flex items-end h-full pb-2">
             <p className="text-sm italic" style={{ color: '#7C838F' }}>
-              {other?.user.displayName ?? '...'} ile konuşmanın başlangıcı. Merhaba de! 🌸
+              {other?.user.displayName ?? '...'} ile konuşmanın başlangıcı. Merhaba de!
             </p>
           </div>
         )}
@@ -171,8 +176,9 @@ export default function DMConversationPage({ params }: { params: Promise<{ conve
 
       {/* Input */}
       <div className="px-4 pb-5 pt-2 shrink-0">
-        <div className="flex items-center gap-3 px-4 rounded-2xl"
+        <div className="flex items-center gap-2 pl-2 pr-3 rounded-2xl"
           style={{ background: '#1A1D23', border: '1px solid rgba(79,209,165,0.25)' }}>
+          <EmojiPicker onPick={(emoji) => setContent((c) => c + emoji)} />
           <input
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -182,12 +188,10 @@ export default function DMConversationPage({ params }: { params: Promise<{ conve
             style={{ color: '#D5D8DE' }}
             disabled={sending}
           />
-          <button onClick={send} disabled={!content.trim() || sending}
-            className="text-lg transition-all disabled:opacity-30"
-            style={{ color: '#4FD1A5' }}
-            onMouseEnter={(e) => { if (content.trim()) e.currentTarget.style.color = '#4FD1A5' }}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#4FD1A5')}>
-            ➤
+          <button onClick={send} disabled={!content.trim() || sending} aria-label="Gönder"
+            className="flex items-center transition-opacity disabled:opacity-30"
+            style={{ color: '#4FD1A5', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <Send size={18} />
           </button>
         </div>
       </div>

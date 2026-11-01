@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Users } from 'lucide-react'
 import Modal from '@/components/ui/Modal'
 import api from '@/lib/api'
 import { useAppStore } from '@/store/app'
@@ -29,7 +30,7 @@ function PickStep({ onCreate, onJoin }: { onCreate: () => void; onJoin: () => vo
   return (
     <div>
       <div className="text-center mb-6">
-        <div className="text-3xl mb-2">🌸</div>
+        <div className="flex justify-center mb-2"><Users size={30} style={{ color: 'var(--accent)' }} /></div>
         <h2 className="text-xl font-bold mb-1" style={{ color: '#E8EAEE' }}>Topluluğa Başla</h2>
         <p className="text-sm" style={{ color: '#7C838F' }}>Kendi topluluğunu kur ya da var olana katıl</p>
       </div>

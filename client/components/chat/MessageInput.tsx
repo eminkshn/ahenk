@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Send, SmilePlus, Clock } from 'lucide-react'
+import { Send, Clock } from 'lucide-react'
+import EmojiPicker from '@/components/ui/EmojiPicker'
 import { getSocket } from '@/hooks/useSocket'
 import { useAppStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
@@ -102,21 +103,12 @@ export default function MessageInput({ channelId }: { channelId: string }) {
         opacity: blocked ? 0.7 : 1,
       }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, padding: '10px 14px' }}>
-          <button
-            style={{
-              padding: '4px', flexShrink: 0,
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: '#5C626D', borderRadius: 6,
-              display: 'flex', alignItems: 'center',
-              transition: 'color 0.15s',
-              marginBottom: 2,
-            }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#4FD1A5')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#5C626D')}
-            title="Emoji (yakında)"
-          >
-            <SmilePlus size={18} />
-          </button>
+          <div style={{ marginBottom: 2 }}>
+            <EmojiPicker onPick={(emoji) => {
+              setContent((c) => c + emoji)
+              inputRef.current?.focus()
+            }} />
+          </div>
 
           <textarea
             ref={inputRef}

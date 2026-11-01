@@ -158,7 +158,7 @@ export default function ChannelSidebar({ onNavigate }: { onNavigate?: () => void
 
         {community.channels.length === 0 && (
           <div style={{ padding: '24px 8px', textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', marginBottom: 8 }}>📡</div>
+            <Hash size={28} style={{ color: '#5C626D', marginBottom: 8 }} />
             <p style={{ fontSize: '0.8125rem', color: '#5C626D', marginBottom: 8 }}>Henüz kanal yok</p>
             {isOwner && (
               <button onClick={() => setChannelModalOpen(true)}

@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Pencil, Trash2, Star } from 'lucide-react'
+import { Pencil, Trash2, Star, MessageSquare } from 'lucide-react'
 import { useAppStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import { getSocket } from '@/hooks/useSocket'
 import api from '@/lib/api'
 
-const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '😡']
+const REACTIONS = ['👍', '❤️', '😂', '🥰', '🔥', '🎉', '👏', '😮', '😢', '😡']
 
 export default function MessageList({ channelId }: { channelId: string }) {
   const { messages, updateMessage } = useAppStore()
@@ -45,12 +45,12 @@ export default function MessageList({ channelId }: { channelId: string }) {
     return (
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '0 24px 24px' }}>
         <div style={{ textAlign: 'center', padding: '32px 24px', maxWidth: 320 }}>
-          <div style={{ fontSize: '3rem', marginBottom: 12 }}>💬</div>
+          <MessageSquare size={44} style={{ color: '#5C626D', marginBottom: 12 }} />
           <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#E8EAEE', marginBottom: 6 }}>
             Konuşmayı sen başlat!
           </p>
           <p style={{ fontSize: '0.875rem', color: '#5C626D', fontStyle: 'italic' }}>
-            Bu kanalda henüz mesaj yok. İlk mesajı gönder. 🌸
+            Bu kanalda henüz mesaj yok. İlk mesajı gönder.
           </p>
         </div>
       </div>

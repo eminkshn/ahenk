@@ -6,6 +6,7 @@ import { Hash, Megaphone, Users, Settings, Clock, Volume2 } from 'lucide-react'
 import { useAppStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import { getSocket } from '@/hooks/useSocket'
+import { useIsStandalone } from '@/hooks/useStandalone'
 import api from '@/lib/api'
 import MessageList from '@/components/chat/MessageList'
 import MessageInput from '@/components/chat/MessageInput'
@@ -22,6 +23,7 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
   const [slowInput, setSlowInput] = useState('')
   const [showMembers, setShowMembers] = useState(false) // starts hidden; desktop opens via useEffect
   const [inVoice, setInVoice] = useState(false)
+  const voiceDisabled = useIsStandalone() // PWA'da ses kapalı
   const memberSwipeStart = useRef<{ x: number; y: number } | null>(null)
 
   // On desktop, show members by default
@@ -158,7 +160,13 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
         </div>
 
         {isVoice ? (
-          inVoice ? (
+          voiceDisabled ? (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24, textAlign: 'center' }}>
+              <Volume2 size={40} style={{ color: '#5C626D' }} />
+              <p style={{ color: '#C9CDD4', fontSize: '0.9375rem', fontWeight: 600, margin: 0 }}>Sesli kanallar şu an kullanılamıyor</p>
+              <p style={{ color: '#7C838F', fontSize: '0.8125rem', margin: 0 }}>Ses özelliği geçici olarak kapalı.</p>
+            </div>
+          ) : inVoice ? (
             <VoiceRoom roomName={`channel-${channelId}`} onLeave={() => setInVoice(false)} />
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>

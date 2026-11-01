@@ -122,7 +122,9 @@ router.post('/join/:inviteCode', async (req: AuthRequest, res: Response) => {
   await prisma.communityMember.create({
     data: { userId: req.userId!, communityId: community.id }
   })
-  res.json(community)
+  // Kanal/üye bilgisiyle döndür; yoksa katıldıktan sonra topluluğa girilemiyor
+  const full = await prisma.community.findUnique({ where: { id: community.id }, include: communityInclude })
+  res.json(full)
 })
 
 router.post('/:id/leave', async (req: AuthRequest, res: Response) => {
