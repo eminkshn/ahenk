@@ -1,12 +1,13 @@
 'use client'
 
 import { useRouter, usePathname } from 'next/navigation'
+import { Users } from 'lucide-react'
 import { useDMStore } from '@/store/dm'
 import { useAuthStore } from '@/store/auth'
 
 const surface = { background: '#12151A', borderRight: '1px solid rgba(79,209,165,0.15)' }
 
-export default function DMSidebar() {
+export default function DMSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const router = useRouter()
   const pathname = usePathname()
   const { conversations } = useDMStore()
@@ -31,7 +32,7 @@ export default function DMSidebar() {
 
       <div className="flex-1 overflow-y-auto py-2 px-2">
         <button
-          onClick={() => router.push('/app/dm')}
+          onClick={() => { router.push('/app/dm'); onNavigate?.() }}
           className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm transition-all mb-1"
           style={{
             background: pathname === '/app/dm' ? 'rgba(79,209,165,0.22)' : 'transparent',
@@ -40,7 +41,7 @@ export default function DMSidebar() {
           onMouseEnter={(e) => { if (pathname !== '/app/dm') { e.currentTarget.style.background = 'rgba(79,209,165,0.1)'; e.currentTarget.style.color = '#C9CDD4' } }}
           onMouseLeave={(e) => { if (pathname !== '/app/dm') { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9AA1AD' } }}
         >
-          <span className="text-lg">👥</span>
+          <Users size={18} />
           <span className="font-medium">Arkadaşlar</span>
         </button>
 
@@ -57,7 +58,7 @@ export default function DMSidebar() {
           return (
             <button
               key={conv.id}
-              onClick={() => router.push(`/app/dm/${conv.id}`)}
+              onClick={() => { router.push(`/app/dm/${conv.id}`); onNavigate?.() }}
               className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-sm transition-all"
               style={{
                 background: active ? 'rgba(79,209,165,0.22)' : 'transparent',

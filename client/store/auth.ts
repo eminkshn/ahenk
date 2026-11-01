@@ -15,6 +15,7 @@ interface AuthState {
   _hasHydrated: boolean
   setAuth: (user: User, accessToken: string, refreshToken: string) => void
   setAccessToken: (token: string) => void
+  setTokens: (accessToken: string, refreshToken: string) => void
   logout: () => void
   setHasHydrated: (v: boolean) => void
 }
@@ -28,6 +29,8 @@ export const useAuthStore = create<AuthState>()(
       _hasHydrated: false,
       setAuth: (user, accessToken, refreshToken) => set({ user, accessToken, refreshToken }),
       setAccessToken: (token) => set({ accessToken: token }),
+      // Sunucu refresh'te token'ı döndürüyor (rotation): ikisini birden sakla
+      setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
       logout: () => set({ user: null, accessToken: null, refreshToken: null }),
       setHasHydrated: (v) => set({ _hasHydrated: v }),
     }),

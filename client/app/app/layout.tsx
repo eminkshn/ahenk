@@ -45,15 +45,38 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const isDM = pathname.startsWith('/app/dm')
 
+  // Kanal/sohbet seçilince mobilde kenar çubuğunu kapat (içerik görünsün)
+  function closeSidebarOnMobile() {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
+      setChannelOpen(false)
+    }
+  }
+
   useEffect(() => {
     if (!_hasHydrated) return
     if (!user) {
       router.replace('/login')
       return
     }
-    api.get('/communities').then(({ data }) => setCommunities(data as Community[]))
-    api.get('/conversations').then(({ data }) => setConversations(data as Conversation[])).catch(() => {})
+    api.get('/communities').then(({ data }) => setCommunities(data as Community[])).catch(() => {})
+    api.get('/conversations').then(({ data }) => {
+      setConversations(data as Conversation[])
+      // İlk açılışta boş /app yerine en son sohbet (yoksa mesajlar ekranı)
+      if (window.location.pathname === '/app') {
+        const last = (data as Conversation[])[0]
+        router.replace(last ? `/app/dm/${last.id}` : '/app/dm')
+      }
+    }).catch(() => {
+      if (window.location.pathname === '/app') router.replace('/app/dm')
+    })
   }, [user, _hasHydrated, router, setCommunities, setConversations])
+
+  // Logo/geri gibi yollarla boş /app'e gelinirse de anlamlı ekrana götür
+  useEffect(() => {
+    if (!_hasHydrated || !user || pathname !== '/app') return
+    const last = useDMStore.getState().conversations[0]
+    router.replace(last ? `/app/dm/${last.id}` : '/app/dm')
+  }, [pathname, _hasHydrated, user, router])
 
   if (!_hasHydrated) return (
     <div style={{
@@ -88,7 +111,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {/* sidebar-wrapper: display:contents on desktop (direct flex child),
               position:fixed overlay on mobile — see globals.css */}
           <div className="sidebar-wrapper">
-            {isDM ? <DMSidebar /> : <ChannelSidebar />}
+            {isDM ? <DMSidebar onNavigate={closeSidebarOnMobile} /> : <ChannelSidebar onNavigate={closeSidebarOnMobile} />}
           </div>
         </>
       )}

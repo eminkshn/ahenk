@@ -10,7 +10,7 @@ import ChannelModal from './ChannelModal'
 import InviteModal from './InviteModal'
 import RoleModal from './RoleModal'
 
-export default function ChannelSidebar() {
+export default function ChannelSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const router = useRouter()
   const pathname = usePathname()
   const { communities, setCommunities, selectedCommunityId } = useAppStore()
@@ -29,7 +29,15 @@ export default function ChannelSidebar() {
   const isOwner = community?.ownerId === user?.id
 
   if (!community) {
-    return <div style={sidebarStyle} />
+    return (
+      <div style={{ ...sidebarStyle, alignItems: 'center', justifyContent: 'center', padding: 24, textAlign: 'center', gap: 10 }}>
+        <Hash size={28} style={{ color: '#5C626D' }} />
+        <p style={{ fontSize: 14, fontWeight: 600, color: '#C9CDD4', margin: 0 }}>Topluluk seçili değil</p>
+        <p style={{ fontSize: 12.5, lineHeight: 1.5, color: '#7C838F', margin: 0 }}>
+          Soldaki listeden bir topluluk seç ya da + ile yeni bir topluluk oluştur.
+        </p>
+      </div>
+    )
   }
 
   const uncategorized = community.channels.filter((ch) => !ch.categoryId).sort((a, b) => a.position - b.position)
@@ -122,7 +130,7 @@ export default function ChannelSidebar() {
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px' }}>
         {uncategorized.map((ch) => (
           <ChannelItem key={ch.id} channel={ch} active={ch.id === activeChannelId} isOwner={isOwner}
-            onClick={() => router.push(`/app/${community.id}/${ch.id}`)}
+            onClick={() => { router.push(`/app/${community.id}/${ch.id}`); onNavigate?.() }}
             onDelete={() => deleteChannel(ch.id)}
             onEdit={() => setEditChannelId(ch.id)} />
         ))}
@@ -140,7 +148,7 @@ export default function ChannelSidebar() {
               />
               {!collapsed && cat.channels.map((ch: Channel) => (
                 <ChannelItem key={ch.id} channel={ch} active={ch.id === activeChannelId} isOwner={isOwner}
-                  onClick={() => router.push(`/app/${community.id}/${ch.id}`)}
+                  onClick={() => { router.push(`/app/${community.id}/${ch.id}`); onNavigate?.() }}
                   onDelete={() => deleteChannel(ch.id)}
                   onEdit={() => setEditChannelId(ch.id)} />
               ))}

@@ -23,7 +23,7 @@ export default function RegisterPage() {
     try {
       const { data } = await api.post('/auth/register', form)
       setAuth(data.user, data.accessToken, data.refreshToken)
-      router.push('/app')
+      router.replace('/app')
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string } } }
       setError(e.response?.data?.error || 'Kayıt sırasında bir hata oluştu')
@@ -87,7 +87,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw(v => !v)}
-                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#5C626D', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
+                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#5C626D', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   onMouseEnter={e => (e.currentTarget.style.color = '#C9CDD4')}
                   onMouseLeave={e => (e.currentTarget.style.color = '#5C626D')}
                 >
