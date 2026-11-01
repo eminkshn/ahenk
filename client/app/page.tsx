@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import './landing.css'
+import { LogoMark } from '@/components/ui/Logo'
 
 const HOW_STEPS = [
   { emoji: '✉️', title: 'Hesap Oluştur', desc: 'E-posta adresinle saniyeler içinde ücretsiz hesap oluştur. Anında erişim.' },
@@ -27,8 +28,8 @@ export default function LandingPage() {
       {/* NAV */}
       <nav className="lp-nav">
         <button className="lp-nav-logo" onClick={() => router.push(user ? '/app' : '/')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, padding: 0 }}>
-          <LandingFlower size={22} />
-          <span style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 600, fontSize: '1.125rem', color: '#f0e4e7', letterSpacing: '-0.01em' }}>ahenk</span>
+          <LogoMark size={26} />
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.125rem', color: '#E8EAEE', letterSpacing: '-0.045em' }}>ahenk</span>
         </button>
         <div className="lp-nav-links">
           <a href="#features">Özellikler</a>
@@ -55,14 +56,14 @@ export default function LandingPage() {
           {/* APP PREVIEW */}
           <div className="lp-preview">
             <div className="lp-preview-bar">
-              <div className="lp-preview-dot" style={{ background: '#e85c6a' }} />
-              <div className="lp-preview-dot" style={{ background: '#e8a83c', marginLeft: 4 }} />
+              <div className="lp-preview-dot" style={{ background: '#FF8A7A' }} />
+              <div className="lp-preview-dot" style={{ background: '#F2B544', marginLeft: 4 }} />
               <div className="lp-preview-dot" style={{ background: '#43b581', marginLeft: 4 }} />
               <div className="lp-preview-title">Ahenk — Topluluk Chat</div>
             </div>
             <div className="lp-app-shell">
               <div className="lp-servers">
-                <div className="lp-srv-icon active" style={{ background: 'linear-gradient(135deg,#8b3a52,#a84f68)' }}>🌸</div>
+                <div className="lp-srv-icon active" style={{ background: 'var(--accent)' }}>🌸</div>
                 <div className="lp-srv-div" />
                 <div className="lp-srv-icon active">🎵</div>
                 <div className="lp-srv-icon">🎸</div>
@@ -71,29 +72,29 @@ export default function LandingPage() {
                 <div className="lp-srv-icon" style={{ color: '#43b581', fontSize: 26, fontWeight: 700, background: 'rgba(67,181,129,.08)' }}>+</div>
               </div>
               <div className="lp-channels">
-                <div className="lp-ch-header"><span style={{ fontSize: 13 }}>Ahenk HQ</span><span style={{ color: '#6a4858', fontSize: 14 }}>📋</span></div>
+                <div className="lp-ch-header"><span style={{ fontSize: 13 }}>Ahenk HQ</span><span style={{ color: '#6B7280', fontSize: 14 }}>📋</span></div>
                 <div className="lp-ch-section">Metin Kanalları</div>
-                <div className="lp-ch-item active"><span style={{ color: '#6a4858', fontSize: 15 }}>#</span>genel</div>
-                <div className="lp-ch-item"><span style={{ color: '#6a4858', fontSize: 15 }}>#</span>duyurular <span className="lp-ch-unread">3</span></div>
-                <div className="lp-ch-item"><span style={{ color: '#6a4858', fontSize: 15 }}>#</span>proje-tartışma</div>
-                <div className="lp-ch-item"><span style={{ color: '#6a4858', fontSize: 15 }}>#</span>tasarım</div>
-                <div className="lp-ch-item"><span style={{ color: '#6a4858', fontSize: 15 }}>#</span>backend</div>
+                <div className="lp-ch-item active"><span style={{ color: '#6B7280', fontSize: 15 }}>#</span>genel</div>
+                <div className="lp-ch-item"><span style={{ color: '#6B7280', fontSize: 15 }}>#</span>duyurular <span className="lp-ch-unread">3</span></div>
+                <div className="lp-ch-item"><span style={{ color: '#6B7280', fontSize: 15 }}>#</span>proje-tartışma</div>
+                <div className="lp-ch-item"><span style={{ color: '#6B7280', fontSize: 15 }}>#</span>tasarım</div>
+                <div className="lp-ch-item"><span style={{ color: '#6B7280', fontSize: 15 }}>#</span>backend</div>
                 <div className="lp-ch-user">
                   <div className="lp-ch-av">🌸<div className="lp-status-dot" style={{ background: '#43b581' }} /></div>
-                  <div><div style={{ fontSize: 12, fontWeight: 700, color: '#f5e8ed' }}>selin_k</div><div style={{ fontSize: 10, color: '#6a4858' }}>çevrimiçi</div></div>
+                  <div><div style={{ fontSize: 12, fontWeight: 700, color: '#F4F5F2' }}>selin_k</div><div style={{ fontSize: 10, color: '#6B7280' }}>çevrimiçi</div></div>
                 </div>
               </div>
               <div className="lp-chat">
                 <div className="lp-chat-header">
-                  <span style={{ color: '#6a4858', fontSize: 16, fontWeight: 400 }}>#</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#f5e8ed' }}>genel</span>
-                  <span style={{ marginLeft: 'auto', fontSize: 11, color: '#6a4858' }}>247 üye</span>
+                  <span style={{ color: '#6B7280', fontSize: 16, fontWeight: 400 }}>#</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#F4F5F2' }}>genel</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 11, color: '#6B7280' }}>247 üye</span>
                 </div>
                 <div className="lp-chat-msgs">
                   {[
-                    { av: '🌺', name: 'Ayşe', nameColor: '#e8a83c', badge: 'Moderatör', badgeBg: 'rgba(232,168,60,.12)', badgeColor: '#e8a83c', time: '10:42', text: 'Herkese günaydın! 🌸 Bugün proje toplantısı saat 15:00\'te.' },
-                    { av: '🌙', name: 'Mehmet', nameColor: '#6db8e8', badge: 'Üye', badgeBg: 'rgba(109,184,232,.12)', badgeColor: '#6db8e8', time: '10:43', text: 'Günaydın! Backend kısmını tamamladım, review için hazır 🚀' },
-                    { av: '⭐', name: 'Zeynep', nameColor: '#c96b82', badge: 'Admin', badgeBg: 'rgba(232,92,106,.12)', badgeColor: '#e85c6a', time: '10:45', text: 'Harika! Tasarım dosyalarını da #tasarım kanalına attım ✨' },
+                    { av: '🌺', name: 'Ayşe', nameColor: '#F2B544', badge: 'Moderatör', badgeBg: 'rgba(242,181,68,.12)', badgeColor: '#F2B544', time: '10:42', text: 'Herkese günaydın! 🌸 Bugün proje toplantısı saat 15:00\'te.' },
+                    { av: '🌙', name: 'Mehmet', nameColor: '#8EA8FF', badge: 'Üye', badgeBg: 'rgba(142,168,255,.12)', badgeColor: '#8EA8FF', time: '10:43', text: 'Günaydın! Backend kısmını tamamladım, review için hazır 🚀' },
+                    { av: '⭐', name: 'Zeynep', nameColor: '#4FD1A5', badge: 'Admin', badgeBg: 'rgba(255,138,122,.12)', badgeColor: '#FF8A7A', time: '10:45', text: 'Harika! Tasarım dosyalarını da #tasarım kanalına attım ✨' },
                   ].map((m) => (
                     <div key={m.name} className="lp-msg-group">
                       <div className="lp-msg-av">{m.av}</div>
@@ -114,19 +115,19 @@ export default function LandingPage() {
                 </div>
                 <div className="lp-chat-input-wrap">
                   <div className="lp-chat-input">
-                    <span style={{ fontSize: 15, color: '#6a4858' }}>#</span>
-                    <span style={{ flex: 1, color: '#6a4858', fontStyle: 'italic', fontFamily: 'inherit', fontSize: 13 }}>genel kanalına mesaj gönder...</span>
+                    <span style={{ fontSize: 15, color: '#6B7280' }}>#</span>
+                    <span style={{ flex: 1, color: '#6B7280', fontStyle: 'italic', fontFamily: 'inherit', fontSize: 13 }}>genel kanalına mesaj gönder...</span>
                     <button className="lp-chat-send">↑</button>
                   </div>
                 </div>
               </div>
               <div className="lp-members">
-                <div className="lp-mem-sec" style={{ color: '#e85c6a' }}>Admin — 1</div>
-                <div className="lp-mem-item"><div className="lp-mem-av">⭐<div className="lp-status-dot" style={{ background: '#43b581' }} /></div><span className="lp-mem-name" style={{ color: '#f5e8ed' }}>Zeynep</span></div>
-                <div className="lp-mem-sec" style={{ color: '#e8a83c', marginTop: 8 }}>Moderatör — 2</div>
+                <div className="lp-mem-sec" style={{ color: '#FF8A7A' }}>Admin — 1</div>
+                <div className="lp-mem-item"><div className="lp-mem-av">⭐<div className="lp-status-dot" style={{ background: '#43b581' }} /></div><span className="lp-mem-name" style={{ color: '#F4F5F2' }}>Zeynep</span></div>
+                <div className="lp-mem-sec" style={{ color: '#F2B544', marginTop: 8 }}>Moderatör — 2</div>
                 <div className="lp-mem-item"><div className="lp-mem-av">🌺<div className="lp-status-dot" style={{ background: '#43b581' }} /></div><span className="lp-mem-name">Ayşe</span></div>
-                <div className="lp-mem-item"><div className="lp-mem-av">🎵<div className="lp-status-dot" style={{ background: '#e8a83c' }} /></div><span className="lp-mem-name">Kemal</span></div>
-                <div className="lp-mem-sec" style={{ color: '#6db8e8', marginTop: 8 }}>Üye — 244</div>
+                <div className="lp-mem-item"><div className="lp-mem-av">🎵<div className="lp-status-dot" style={{ background: '#F2B544' }} /></div><span className="lp-mem-name">Kemal</span></div>
+                <div className="lp-mem-sec" style={{ color: '#8EA8FF', marginTop: 8 }}>Üye — 244</div>
                 <div className="lp-mem-item"><div className="lp-mem-av">🌙<div className="lp-status-dot" style={{ background: '#43b581' }} /></div><span className="lp-mem-name">Mehmet</span></div>
                 <div className="lp-mem-item"><div className="lp-mem-av">🌸<div className="lp-status-dot" style={{ background: '#43b581' }} /></div><span className="lp-mem-name">selin_k</span></div>
               </div>
@@ -204,9 +205,9 @@ export default function LandingPage() {
         <p className="lp-section-sub">Üç katmanlı rol yapısıyla topluluğunu düzenli ve güvenli tut.</p>
         <div className="lp-roles-inner">
           {[
-            { icon: '👑', name: 'Admin', color: '#e85c6a', border: 'rgba(232,92,106,.3)', bg: 'rgba(232,92,106,.05)', perms: ['Tüm kanalları yönet', 'Kullanıcı at / yasakla', 'Roller ata ve düzenle', 'Sunucu ayarlarını değiştir', 'Tüm mesajları sil'] },
-            { icon: '🛡️', name: 'Moderatör', color: '#e8a83c', border: 'rgba(232,168,60,.3)', bg: 'rgba(232,168,60,.05)', perms: ['Mesaj sil / düzenle', 'Kullanıcıyı geçici sustur', 'Kanal mesajlarını yönet', 'Yeni kanal oluştur'] },
-            { icon: '👤', name: 'Üye', color: '#6db8e8', border: 'rgba(109,184,232,.3)', bg: 'rgba(109,184,232,.05)', perms: ['Kanallara mesaj gönder', 'Direkt mesaj gönder', 'Emoji reaksiyon ekle', 'Profil özelleştir'] },
+            { icon: '👑', name: 'Admin', color: '#FF8A7A', border: 'rgba(255,138,122,.3)', bg: 'rgba(255,138,122,.05)', perms: ['Tüm kanalları yönet', 'Kullanıcı at / yasakla', 'Roller ata ve düzenle', 'Sunucu ayarlarını değiştir', 'Tüm mesajları sil'] },
+            { icon: '🛡️', name: 'Moderatör', color: '#F2B544', border: 'rgba(242,181,68,.3)', bg: 'rgba(242,181,68,.05)', perms: ['Mesaj sil / düzenle', 'Kullanıcıyı geçici sustur', 'Kanal mesajlarını yönet', 'Yeni kanal oluştur'] },
+            { icon: '👤', name: 'Üye', color: '#8EA8FF', border: 'rgba(142,168,255,.3)', bg: 'rgba(142,168,255,.05)', perms: ['Kanallara mesaj gönder', 'Direkt mesaj gönder', 'Emoji reaksiyon ekle', 'Profil özelleştir'] },
           ].map((r) => (
             <div key={r.name} className="lp-role-card" style={{ borderColor: r.border, background: r.bg }}>
               <div className="lp-role-icon">{r.icon}</div>
@@ -228,39 +229,39 @@ export default function LandingPage() {
         <div className="lp-pricing-grid">
           <div className="lp-price-card">
             <div className="lp-price-name">Ücretsiz</div>
-            <div className="lp-price-amount" style={{ color: '#f5e8ed' }}>₺0<span style={{ fontSize: 16, color: '#6a4858', fontWeight: 400 }}>/ay</span></div>
+            <div className="lp-price-amount" style={{ color: '#F4F5F2' }}>₺0<span style={{ fontSize: 16, color: '#6B7280', fontWeight: 400 }}>/ay</span></div>
             <div className="lp-price-desc">Kişisel projeler ve küçük topluluklar için</div>
             <ul className="lp-price-features">
               {['5 sunucuya üye ol', 'Sınırsız metin kanalı', '10.000 mesaj geçmişi', 'Temel profil'].map((f) => (
                 <li key={f}><div className="lp-price-chk" style={{ background: 'rgba(67,181,129,.15)', color: '#43b581' }}>✓</div>{f}</li>
               ))}
             </ul>
-            <button className="lp-price-btn" onClick={() => router.push('/register')} style={{ background: 'transparent', border: '1px solid rgba(139,58,82,0.35)', color: '#d4a8b8' }}>Hemen Başla</button>
+            <button className="lp-price-btn" onClick={() => router.push('/register')} style={{ background: 'transparent', border: '1px solid rgba(79,209,165,0.35)', color: '#7FE3C0' }}>Hemen Başla</button>
           </div>
           <div className="lp-price-card featured">
             <div className="lp-price-badge">En Popüler</div>
             <div className="lp-price-name">Pro</div>
-            <div className="lp-price-amount" style={{ background: 'linear-gradient(135deg,#8b3a52,#a84f68)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              ₺49<span style={{ fontSize: 16, WebkitTextFillColor: '#6a4858', fontWeight: 400 }}>/ay</span>
+            <div className="lp-price-amount" style={{ background: 'var(--accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              ₺49<span style={{ fontSize: 16, WebkitTextFillColor: '#6B7280', fontWeight: 400 }}>/ay</span>
             </div>
             <div className="lp-price-desc">Aktif topluluklar ve ekipler için</div>
             <ul className="lp-price-features">
               {['Sınırsız sunucu', 'Sınırsız mesaj geçmişi', '100MB dosya paylaşımı', 'Özel profil rozetleri', 'Öncelikli destek'].map((f) => (
-                <li key={f}><div className="lp-price-chk" style={{ background: 'rgba(139,58,82,.15)', color: '#c96b82' }}>✓</div>{f}</li>
+                <li key={f}><div className="lp-price-chk" style={{ background: 'rgba(79,209,165,.15)', color: '#4FD1A5' }}>✓</div>{f}</li>
               ))}
             </ul>
-            <button className="lp-price-btn" onClick={() => router.push('/register')} style={{ background: 'linear-gradient(135deg,#8b3a52,#a84f68)', border: 'none', color: '#f5e8ed' }}>Pro&apos;ya Geç</button>
+            <button className="lp-price-btn" onClick={() => router.push('/register')} style={{ background: 'var(--accent)', border: 'none', color: 'var(--accent-ink)' }}>Pro&apos;ya Geç</button>
           </div>
           <div className="lp-price-card">
             <div className="lp-price-name">Kurumsal</div>
-            <div className="lp-price-amount" style={{ color: '#f5e8ed', fontSize: 36 }}>Özel</div>
+            <div className="lp-price-amount" style={{ color: '#F4F5F2', fontSize: 36 }}>Özel</div>
             <div className="lp-price-desc">Büyük organizasyonlar için özel çözüm</div>
             <ul className="lp-price-features">
               {['Kendi sunucunda barındır', 'SSO entegrasyonu', 'SLA garantisi', 'Özel moderasyon araçları', 'Dedicated destek ekibi'].map((f) => (
-                <li key={f}><div className="lp-price-chk" style={{ background: 'rgba(109,184,232,.15)', color: '#6db8e8' }}>✓</div>{f}</li>
+                <li key={f}><div className="lp-price-chk" style={{ background: 'rgba(142,168,255,.15)', color: '#8EA8FF' }}>✓</div>{f}</li>
               ))}
             </ul>
-            <button className="lp-price-btn" style={{ background: 'transparent', border: '1px solid rgba(139,58,82,0.35)', color: '#d4a8b8' }}>Bize Ulaş</button>
+            <button className="lp-price-btn" style={{ background: 'transparent', border: '1px solid rgba(79,209,165,0.35)', color: '#7FE3C0' }}>Bize Ulaş</button>
           </div>
         </div>
       </section>
@@ -309,8 +310,8 @@ export default function LandingPage() {
         <div className="lp-footer-top">
           <div>
             <div className="lp-footer-logo" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <LandingFlower size={20} />
-            <span style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 600, fontSize: '1.0625rem', color: '#f0e4e7' }}>ahenk</span>
+            <LogoMark size={24} />
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.0625rem', color: '#E8EAEE', letterSpacing: '-0.045em' }}>ahenk</span>
           </div>
             <div className="lp-footer-tagline">Topluluğunla ahenk içinde ol. Sade, hızlı ve tamamen senin kontrolünde.</div>
             <div className="lp-footer-social">
@@ -330,19 +331,3 @@ export default function LandingPage() {
   )
 }
 
-function LandingFlower({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g transform="translate(12,12)">
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.92" transform="rotate(0)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.88" transform="rotate(60)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#b05a72" opacity="0.88" transform="rotate(120)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#b05a72" opacity="0.84" transform="rotate(180)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.84" transform="rotate(240)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.88" transform="rotate(300)" />
-      </g>
-      <circle cx="12" cy="12" r="3.8" fill="#f5dde5" />
-      <circle cx="12" cy="12" r="2.2" fill="#f0e4e7" />
-    </svg>
-  )
-}

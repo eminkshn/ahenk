@@ -58,7 +58,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       height: '100vh', background: 'var(--bg-base)',
-      fontFamily: "'Lora', Georgia, serif",
+      fontFamily: 'var(--font-body)',
     }}>
       <div style={{ color: 'var(--accent-muted)', fontSize: '0.875rem' }}>Yükleniyor...</div>
     </div>
@@ -69,7 +69,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
       className="flex h-screen overflow-hidden"
-      style={{ background: '#080305', color: '#f0e4e7', fontFamily: "'Lora', Georgia, serif" }}
+      style={{ background: '#0B0D10', color: '#E8EAEE', fontFamily: 'var(--font-body)' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >

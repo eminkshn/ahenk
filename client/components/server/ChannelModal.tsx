@@ -8,9 +8,9 @@ import { useAppStore } from '@/store/app'
 type Mode = 'channel' | 'category'
 
 const inputCls = 'w-full px-3.5 py-2.5 rounded-lg text-sm outline-none'
-const inputStyle = { background: '#10050a', border: '1px solid rgba(139,58,82,0.3)', color: '#f0e4e7' }
-const focusOn = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.target.style.borderColor = '#8b3a52')
-const focusOff = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.target.style.borderColor = 'rgba(139,58,82,0.3)')
+const inputStyle = { background: '#0B0D10', border: '1px solid rgba(79,209,165,0.3)', color: '#E8EAEE' }
+const focusOn = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.target.style.borderColor = '#4FD1A5')
+const focusOff = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.target.style.borderColor = 'rgba(79,209,165,0.3)')
 
 export default function ChannelModal({
   open, onClose, communityId
@@ -59,15 +59,15 @@ export default function ChannelModal({
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <div className="flex gap-1 mb-6 p-1 rounded-xl" style={{ background: 'rgba(139,58,82,0.1)' }}>
+      <div className="flex gap-1 mb-6 p-1 rounded-xl" style={{ background: 'rgba(79,209,165,0.1)' }}>
         {(['channel', 'category'] as Mode[]).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
             className="flex-1 py-2 rounded-lg text-sm font-medium transition-all"
             style={{
-              background: mode === m ? 'linear-gradient(135deg, #8b3a52, #a84f68)' : 'transparent',
-              color: mode === m ? '#f0e4e7' : '#9a7a82',
+              background: mode === m ? 'var(--accent)' : 'transparent',
+              color: mode === m ? 'var(--accent-ink)' : '#9AA1AD',
             }}
           >
             {m === 'channel' ? 'Kanal Oluştur' : 'Kategori Oluştur'}
@@ -79,13 +79,13 @@ export default function ChannelModal({
         {mode === 'channel' ? (
           <>
             <div>
-              <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#c4a0a8' }}>Kanal Adı</label>
+              <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#C9CDD4' }}>Kanal Adı</label>
               <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="genel" className={inputCls} style={inputStyle}
                 required autoFocus onFocus={focusOn} onBlur={focusOff} />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#c4a0a8' }}>Kanal Türü</label>
+              <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#C9CDD4' }}>Kanal Türü</label>
               <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
                 className={inputCls} style={inputStyle} onFocus={focusOn} onBlur={focusOff}>
                 <option value="TEXT"># Metin</option>
@@ -94,13 +94,13 @@ export default function ChannelModal({
               </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#c4a0a8' }}>Konu (opsiyonel)</label>
+              <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#C9CDD4' }}>Konu (opsiyonel)</label>
               <input value={form.topic} onChange={(e) => setForm((f) => ({ ...f, topic: e.target.value }))}
                 placeholder="Bu kanal ne hakkında?" className={inputCls} style={inputStyle} onFocus={focusOn} onBlur={focusOff} />
             </div>
             {community && community.categories.length > 0 && (
               <div>
-                <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#c4a0a8' }}>Kategori (opsiyonel)</label>
+                <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#C9CDD4' }}>Kategori (opsiyonel)</label>
                 <select value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
                   className={inputCls} style={inputStyle} onFocus={focusOn} onBlur={focusOff}>
                   <option value="">Kategori yok</option>
@@ -111,25 +111,25 @@ export default function ChannelModal({
           </>
         ) : (
           <div>
-            <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#c4a0a8' }}>Kategori Adı</label>
+            <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#C9CDD4' }}>Kategori Adı</label>
             <input value={catName} onChange={(e) => setCatName(e.target.value)}
               placeholder="Genel Kanallar" className={inputCls} style={inputStyle}
               required autoFocus onFocus={focusOn} onBlur={focusOff} />
           </div>
         )}
 
-        {error && <p className="text-sm" style={{ color: '#e85c6a' }}>{error}</p>}
+        {error && <p className="text-sm" style={{ color: '#FF8A7A' }}>{error}</p>}
 
         <div className="flex gap-3 pt-1">
           <button type="button" onClick={handleClose}
             className="flex-1 py-2.5 rounded-xl text-sm font-medium"
-            style={{ background: 'rgba(139,58,82,0.1)', color: '#9a7a82', border: '1px solid rgba(139,58,82,0.2)' }}>
+            style={{ background: 'rgba(79,209,165,0.1)', color: '#9AA1AD', border: '1px solid rgba(79,209,165,0.2)' }}>
             İptal
           </button>
           <button type="submit"
             disabled={loading || (mode === 'channel' ? !form.name : !catName)}
             className="flex-1 py-2.5 rounded-xl font-semibold text-sm transition-opacity"
-            style={{ background: 'linear-gradient(135deg, #8b3a52, #a84f68)', color: '#f0e4e7',
+            style={{ background: 'var(--accent)', color: 'var(--accent-ink)',
               opacity: (loading || (mode === 'channel' ? !form.name : !catName)) ? 0.5 : 1 }}>
             {loading ? 'Oluşturuluyor...' : 'Oluştur'}
           </button>

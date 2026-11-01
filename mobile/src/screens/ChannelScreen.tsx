@@ -7,6 +7,7 @@ import { getSocket } from '../lib/socket'
 import { useAppStore, type Message } from '../store/app'
 import { useAuthStore } from '../store/auth'
 import type { RootStackParamList } from '../../App'
+import { colors } from '../theme'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Channel'>
 
@@ -95,7 +96,7 @@ export default function ChannelScreen() {
         <TextInput
           style={s.input}
           placeholder={`#${channelName} kanalına yaz...`}
-          placeholderTextColor="#6d6f78"
+          placeholderTextColor={colors.textFaint}
           value={content}
           onChangeText={setContent}
           multiline
@@ -114,26 +115,26 @@ export default function ChannelScreen() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#313338' },
+  container: { flex: 1, backgroundColor: colors.bg },
   list: { flex: 1, paddingHorizontal: 12 },
   emptyContainer: { flex: 1, justifyContent: 'flex-end', padding: 16 },
-  empty: { color: '#96989d', fontSize: 14 },
+  empty: { color: colors.textMuted, fontSize: 14 },
   msgRow: { flexDirection: 'row', paddingVertical: 2, paddingHorizontal: 4, borderRadius: 4 },
   msgRowFirst: { marginTop: 12 },
-  avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#5865f2', justifyContent: 'center', alignItems: 'center', marginRight: 10, marginTop: 2 },
-  avatarMe: { backgroundColor: '#3ba55c' },
+  avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.seal, justifyContent: 'center', alignItems: 'center', marginRight: 10, marginTop: 2 },
+  avatarMe: { backgroundColor: colors.accent },
   avatarSpacer: { width: 36, marginRight: 10 },
-  avatarText: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  avatarText: { color: colors.ink, fontWeight: 'bold', fontSize: 13 },
   msgContent: { flex: 1 },
   msgMeta: { flexDirection: 'row', alignItems: 'baseline', gap: 6, marginBottom: 2 },
-  msgAuthor: { color: '#fff', fontWeight: '600', fontSize: 14 },
-  msgAuthorMe: { color: '#5865f2' },
-  msgTime: { color: '#96989d', fontSize: 11 },
-  msgText: { color: '#dbdee1', fontSize: 14, lineHeight: 20 },
-  msgEdited: { color: '#96989d', fontSize: 11 },
-  inputRow: { flexDirection: 'row', alignItems: 'flex-end', padding: 10, paddingHorizontal: 12, borderTopWidth: 1, borderTopColor: '#1e1f22', gap: 8 },
-  input: { flex: 1, backgroundColor: '#383a40', color: '#dbdee1', borderRadius: 22, paddingHorizontal: 16, paddingVertical: 10, fontSize: 14, maxHeight: 100 },
-  sendBtn: { backgroundColor: '#5865f2', width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
+  msgAuthor: { color: colors.text, fontWeight: '600', fontSize: 14 },
+  msgAuthorMe: { color: colors.accent },
+  msgTime: { color: colors.textMuted, fontSize: 11 },
+  msgText: { color: colors.text, fontSize: 14, lineHeight: 20 },
+  msgEdited: { color: colors.textMuted, fontSize: 11 },
+  inputRow: { flexDirection: 'row', alignItems: 'flex-end', padding: 10, paddingHorizontal: 12, borderTopWidth: 1, borderTopColor: colors.inset, gap: 8 },
+  input: { flex: 1, backgroundColor: colors.elevated, color: colors.text, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 10, fontSize: 14, maxHeight: 100 },
+  sendBtn: { backgroundColor: colors.accent, width: 40, height: 40, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
   sendBtnDisabled: { opacity: 0.4 },
-  sendBtnText: { color: '#fff', fontSize: 16 },
+  sendBtnText: { color: colors.ink, fontSize: 16 },
 })

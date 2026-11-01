@@ -95,7 +95,7 @@ export default function ChannelSidebar() {
         gap: 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#f0e4e7', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+          <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#E8EAEE', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
             {community.name}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -110,11 +110,11 @@ export default function ChannelSidebar() {
         </div>
         {/* Member count */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: '0.7rem', color: '#5a3d45' }}>
+          <span style={{ fontSize: '0.7rem', color: '#5C626D' }}>
             <span style={{ color: '#3ba55d' }}>●</span> {community.members?.filter(m => m.user.status !== 'OFFLINE').length ?? 0} çevrimiçi
           </span>
-          <span style={{ fontSize: '0.7rem', color: '#5a3d45' }}>·</span>
-          <span style={{ fontSize: '0.7rem', color: '#5a3d45' }}>{community.members?.length ?? 0} üye</span>
+          <span style={{ fontSize: '0.7rem', color: '#5C626D' }}>·</span>
+          <span style={{ fontSize: '0.7rem', color: '#5C626D' }}>{community.members?.length ?? 0} üye</span>
         </div>
       </div>
 
@@ -151,10 +151,10 @@ export default function ChannelSidebar() {
         {community.channels.length === 0 && (
           <div style={{ padding: '24px 8px', textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', marginBottom: 8 }}>📡</div>
-            <p style={{ fontSize: '0.8125rem', color: '#5a3d45', marginBottom: 8 }}>Henüz kanal yok</p>
+            <p style={{ fontSize: '0.8125rem', color: '#5C626D', marginBottom: 8 }}>Henüz kanal yok</p>
             {isOwner && (
               <button onClick={() => setChannelModalOpen(true)}
-                style={{ fontSize: '0.8125rem', color: '#c96b82', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+                style={{ fontSize: '0.8125rem', color: '#4FD1A5', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
                 İlk kanalı oluştur
               </button>
             )}
@@ -201,11 +201,11 @@ function HeaderBtn({ onClick, title, danger, children }: { onClick: () => void; 
   return (
     <button onClick={onClick} title={title} style={{
       padding: '4px 5px', background: 'none', border: 'none', cursor: 'pointer',
-      color: '#5a3d45', display: 'flex', alignItems: 'center', borderRadius: 6,
+      color: '#5C626D', display: 'flex', alignItems: 'center', borderRadius: 6,
       transition: 'color 0.15s, background 0.15s',
     }}
-      onMouseEnter={e => { e.currentTarget.style.color = danger ? '#e85c6a' : '#f0e4e7'; e.currentTarget.style.background = danger ? 'rgba(232,92,106,0.1)' : 'rgba(139,58,82,0.15)' }}
-      onMouseLeave={e => { e.currentTarget.style.color = '#5a3d45'; e.currentTarget.style.background = 'none' }}>
+      onMouseEnter={e => { e.currentTarget.style.color = danger ? '#FF8A7A' : '#E8EAEE'; e.currentTarget.style.background = danger ? 'rgba(255,138,122,0.1)' : 'rgba(79,209,165,0.15)' }}
+      onMouseLeave={e => { e.currentTarget.style.color = '#5C626D'; e.currentTarget.style.background = 'none' }}>
       {children}
     </button>
   )
@@ -224,7 +224,7 @@ function CategoryHeader({ name, collapsed, isOwner, onToggle, onDelete }: {
         style={{
           flex: 1, display: 'flex', alignItems: 'center', gap: 4,
           padding: '2px 6px 4px', background: 'none', border: 'none', cursor: 'pointer',
-          color: hovered ? '#c4a0ab' : '#5a3d45', transition: 'color 0.15s',
+          color: hovered ? '#C9CDD4' : '#5C626D', transition: 'color 0.15s',
         }}
       >
         {collapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
@@ -234,7 +234,7 @@ function CategoryHeader({ name, collapsed, isOwner, onToggle, onDelete }: {
       </button>
       {isOwner && hovered && (
         <button onClick={(e) => { e.stopPropagation(); onDelete() }}
-          style={{ padding: '2px 4px', background: 'none', border: 'none', cursor: 'pointer', color: '#e85c6a', borderRadius: 4, display: 'flex' }}
+          style={{ padding: '2px 4px', background: 'none', border: 'none', cursor: 'pointer', color: '#FF8A7A', borderRadius: 4, display: 'flex' }}
           title="Kategoriyi Sil">
           <Trash2 size={11} />
         </button>
@@ -266,19 +266,19 @@ function EditChannelModal({ open, onClose, communityId, channel }: {
 
   if (!open) return null
 
-  const inputStyle = { background: '#10050a', border: '1px solid rgba(139,58,82,0.3)', color: '#f0e4e7' }
+  const inputStyle = { background: '#0B0D10', border: '1px solid rgba(79,209,165,0.3)', color: '#E8EAEE' }
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: 'rgba(19,7,24,0.98)', border: '1px solid rgba(139,58,82,0.4)', borderRadius: 18, padding: '28px 28px 24px', width: 340, boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}>
-        <h3 style={{ fontWeight: 700, fontSize: '1rem', color: '#f0e4e7', marginBottom: 20 }}>Kanalı Düzenle</h3>
+      <div onClick={e => e.stopPropagation()} style={{ background: 'rgba(22,25,32,0.98)', border: '1px solid rgba(79,209,165,0.4)', borderRadius: 18, padding: '28px 28px 24px', width: 340, boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}>
+        <h3 style={{ fontWeight: 700, fontSize: '1rem', color: '#E8EAEE', marginBottom: 20 }}>Kanalı Düzenle</h3>
         <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: '#c4a0a8', marginBottom: 6 }}>Kanal Adı</label>
+            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: '#C9CDD4', marginBottom: 6 }}>Kanal Adı</label>
             <input value={name} onChange={e => setName(e.target.value)} className="input-base" style={{ ...inputStyle, width: '100%', padding: '10px 14px' }} required />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: '#c4a0a8', marginBottom: 6 }}>Konu</label>
+            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: '#C9CDD4', marginBottom: 6 }}>Konu</label>
             <input value={topic} onChange={e => setTopic(e.target.value)} className="input-base" style={{ ...inputStyle, width: '100%', padding: '10px 14px' }} placeholder="Opsiyonel..." />
           </div>
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
@@ -306,9 +306,9 @@ function ChannelItem({ channel, active, isOwner, onClick, onDelete, onEdit }: {
         style={{
           flex: 1, display: 'flex', alignItems: 'center', gap: 6,
           padding: '5px 8px', borderRadius: 6,
-          background: active ? 'rgba(139,58,82,0.2)' : hovered ? 'rgba(139,58,82,0.1)' : 'transparent',
-          color: active ? '#f0e4e7' : hovered ? '#c4a0ab' : '#8a6870',
-          border: active ? '1px solid rgba(139,58,82,0.25)' : '1px solid transparent',
+          background: active ? 'rgba(79,209,165,0.2)' : hovered ? 'rgba(79,209,165,0.1)' : 'transparent',
+          color: active ? '#E8EAEE' : hovered ? '#C9CDD4' : '#8A919C',
+          border: active ? '1px solid rgba(79,209,165,0.25)' : '1px solid transparent',
           cursor: 'pointer', textAlign: 'left', fontSize: '0.875rem',
           transition: 'all 0.12s',
           fontFamily: 'inherit',
@@ -316,10 +316,10 @@ function ChannelItem({ channel, active, isOwner, onClick, onDelete, onEdit }: {
           overflow: 'hidden',
         }}
       >
-        <Icon size={15} style={{ color: active ? '#c96b82' : hovered ? '#8b3a52' : '#5a3d45', flexShrink: 0, transition: 'color 0.12s' }} />
+        <Icon size={15} style={{ color: active ? '#4FD1A5' : hovered ? '#4FD1A5' : '#5C626D', flexShrink: 0, transition: 'color 0.12s' }} />
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{channel.name}</span>
         {channel.type === 'ANNOUNCEMENT' && (
-          <span style={{ fontSize: '0.65rem', padding: '1px 5px', borderRadius: 4, background: 'rgba(139,58,82,0.2)', color: '#c96b82', flexShrink: 0 }}>
+          <span style={{ fontSize: '0.65rem', padding: '1px 5px', borderRadius: 4, background: 'rgba(79,209,165,0.2)', color: '#4FD1A5', flexShrink: 0 }}>
             duyuru
           </span>
         )}
@@ -328,18 +328,18 @@ function ChannelItem({ channel, active, isOwner, onClick, onDelete, onEdit }: {
         <div style={{ position: 'absolute', right: 4, display: 'flex', gap: 2 }}>
           <button
             onClick={(e) => { e.stopPropagation(); onEdit() }}
-            style={{ padding: '3px', background: 'rgba(139,58,82,0.15)', border: 'none', borderRadius: 4, cursor: 'pointer', color: '#c4a0ab', display: 'flex', alignItems: 'center', transition: 'background 0.12s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.28)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.15)')}
+            style={{ padding: '3px', background: 'rgba(79,209,165,0.15)', border: 'none', borderRadius: 4, cursor: 'pointer', color: '#C9CDD4', display: 'flex', alignItems: 'center', transition: 'background 0.12s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,209,165,0.28)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(79,209,165,0.15)')}
             title="Kanalı Düzenle"
           >
             <Pencil size={11} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete() }}
-            style={{ padding: '3px', background: 'rgba(232,92,106,0.1)', border: 'none', borderRadius: 4, cursor: 'pointer', color: '#e85c6a', display: 'flex', alignItems: 'center', transition: 'background 0.12s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(232,92,106,0.2)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(232,92,106,0.1)')}
+            style={{ padding: '3px', background: 'rgba(255,138,122,0.1)', border: 'none', borderRadius: 4, cursor: 'pointer', color: '#FF8A7A', display: 'flex', alignItems: 'center', transition: 'background 0.12s' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,138,122,0.2)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,138,122,0.1)')}
             title="Kanalı Sil"
           >
             <Trash2 size={11} />

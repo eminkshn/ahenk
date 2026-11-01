@@ -28,26 +28,26 @@ export default function InviteModal({
       <div className="space-y-4 mt-4">
         <div
           className="rounded-xl p-4"
-          style={{ background: 'rgba(139,58,82,0.1)', border: '1px solid rgba(139,58,82,0.25)' }}
+          style={{ background: 'rgba(79,209,165,0.1)', border: '1px solid rgba(79,209,165,0.25)' }}
         >
-          <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#9a7a82' }}>
+          <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#9AA1AD' }}>
             Davet Kodu
           </p>
-          <p className="font-mono text-lg break-all" style={{ color: '#c96b82' }}>{inviteCode}</p>
+          <p className="font-mono text-lg break-all" style={{ color: '#4FD1A5' }}>{inviteCode}</p>
         </div>
 
         <button
           onClick={copy}
           className="w-full py-2.5 rounded-xl font-semibold text-sm transition-all"
           style={{
-            background: copied ? '#43b581' : 'linear-gradient(135deg, #8b3a52, #a84f68)',
-            color: '#f0e4e7',
+            background: copied ? '#43b581' : 'var(--accent)',
+            color: 'var(--accent-ink)',
           }}
         >
           {copied ? '✓ Kopyalandı!' : 'Kodu Kopyala'}
         </button>
 
-        <p className="text-xs text-center" style={{ color: '#7a5a62' }}>
+        <p className="text-xs text-center" style={{ color: '#7C838F' }}>
           Bu kod kalıcıdır. Topluluğa katılmak isteyen herkesle paylaş.
         </p>
       </div>

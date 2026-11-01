@@ -93,18 +93,18 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
           display: 'flex', alignItems: 'center', gap: 10,
           flexShrink: 0,
           borderBottom: '1px solid var(--border)',
-          background: 'rgba(6,2,8,0.6)',
+          background: 'rgba(15,17,21,0.6)',
           backdropFilter: 'blur(8px)',
         }}>
-          <ChannelIcon size={17} style={{ color: '#8b3a52', flexShrink: 0 }} />
-          <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#f0e4e7' }}>
+          <ChannelIcon size={17} style={{ color: '#4FD1A5', flexShrink: 0 }} />
+          <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#E8EAEE' }}>
             {channel?.name ?? channelId}
           </span>
 
           {channel?.topic && (
             <>
-              <div style={{ width: 1, height: 16, background: 'rgba(139,58,82,0.3)', margin: '0 4px' }} />
-              <span style={{ fontSize: '0.8125rem', color: '#5a3d45', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+              <div style={{ width: 1, height: 16, background: 'rgba(79,209,165,0.3)', margin: '0 4px' }} />
+              <span style={{ fontSize: '0.8125rem', color: '#5C626D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                 {channel.topic}
               </span>
             </>
@@ -114,10 +114,10 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
             {channel?.slowMode ? (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 4,
-                fontSize: '0.75rem', color: '#8a6870',
+                fontSize: '0.75rem', color: '#8A919C',
                 padding: '2px 8px', borderRadius: 12,
-                background: 'rgba(139,58,82,0.1)',
-                border: '1px solid rgba(139,58,82,0.2)',
+                background: 'rgba(79,209,165,0.1)',
+                border: '1px solid rgba(79,209,165,0.2)',
               }}>
                 <Clock size={11} />
                 {channel.slowMode}s yavaş mod
@@ -130,11 +130,11 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
                 title="Kanal Ayarları"
                 style={{
                   padding: '5px', background: 'none', border: 'none', cursor: 'pointer',
-                  color: '#5a3d45', borderRadius: 6, display: 'flex', alignItems: 'center',
+                  color: '#5C626D', borderRadius: 6, display: 'flex', alignItems: 'center',
                   transition: 'color 0.15s, background 0.15s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#c4a0ab'; e.currentTarget.style.background = 'rgba(139,58,82,0.12)' }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#5a3d45'; e.currentTarget.style.background = 'none' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#C9CDD4'; e.currentTarget.style.background = 'rgba(79,209,165,0.12)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#5C626D'; e.currentTarget.style.background = 'none' }}
               >
                 <Settings size={15} />
               </button>
@@ -145,12 +145,12 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
               title={showMembers ? 'Üyeleri Gizle' : 'Üyeleri Göster'}
               style={{
                 padding: '5px', border: 'none', cursor: 'pointer',
-                color: showMembers ? '#c96b82' : '#5a3d45', borderRadius: 6, display: 'flex', alignItems: 'center',
+                color: showMembers ? '#4FD1A5' : '#5C626D', borderRadius: 6, display: 'flex', alignItems: 'center',
                 transition: 'color 0.15s, background 0.15s',
-                background: showMembers ? 'rgba(139,58,82,0.12)' : 'none',
+                background: showMembers ? 'rgba(79,209,165,0.12)' : 'none',
               }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#c4a0ab' }}
-              onMouseLeave={e => { e.currentTarget.style.color = showMembers ? '#c96b82' : '#5a3d45' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#C9CDD4' }}
+              onMouseLeave={e => { e.currentTarget.style.color = showMembers ? '#4FD1A5' : '#5C626D' }}
             >
               <Users size={15} />
             </button>
@@ -162,16 +162,16 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
             <VoiceRoom roomName={`channel-${channelId}`} onLeave={() => setInVoice(false)} />
           ) : (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-              <Volume2 size={48} style={{ color: '#5a3d45' }} />
-              <p style={{ color: '#8a6870', fontSize: '0.9375rem' }}>Ses kanalına katıl</p>
+              <Volume2 size={48} style={{ color: '#5C626D' }} />
+              <p style={{ color: '#8A919C', fontSize: '0.9375rem' }}>Ses kanalına katıl</p>
               <button
                 onClick={() => setInVoice(true)}
                 style={{
                   padding: '12px 28px', borderRadius: 14,
-                  background: 'linear-gradient(135deg, #8b3a52, #b04e6a)',
-                  color: '#f0e4e7', border: 'none', cursor: 'pointer',
+                  background: 'var(--accent)',
+                  color: 'var(--accent-ink)', border: 'none', cursor: 'pointer',
                   fontSize: '0.9375rem', fontWeight: 600, fontFamily: 'inherit',
-                  boxShadow: '0 4px 20px rgba(139,58,82,0.45)',
+                  boxShadow: '0 4px 20px rgba(79,209,165,0.45)',
                   transition: 'opacity 0.15s',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
@@ -218,8 +218,8 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
             onClick={e => e.stopPropagation()}
             className="animate-scale-in"
             style={{
-              background: 'rgba(19,7,24,0.98)',
-              border: '1px solid rgba(139,58,82,0.4)',
+              background: 'rgba(22,25,32,0.98)',
+              border: '1px solid rgba(79,209,165,0.4)',
               borderRadius: 18,
               padding: '28px 28px 24px',
               width: 320,
@@ -227,10 +227,10 @@ export default function ChannelPage({ params }: { params: Promise<{ communityId:
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-              <Clock size={18} style={{ color: '#c96b82' }} />
-              <h3 style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#f0e4e7' }}>Yavaş Mod</h3>
+              <Clock size={18} style={{ color: '#4FD1A5' }} />
+              <h3 style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#E8EAEE' }}>Yavaş Mod</h3>
             </div>
-            <p style={{ fontSize: '0.8125rem', color: '#5a3d45', fontStyle: 'italic', marginBottom: 20 }}>
+            <p style={{ fontSize: '0.8125rem', color: '#5C626D', fontStyle: 'italic', marginBottom: 20 }}>
               Kullanıcılar arası mesaj aralığı (saniye). 0 = kapalı.
             </p>
             <input

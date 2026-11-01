@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { useAuthStore } from './src/store/auth'
 import { connectSocket } from './src/lib/socket'
+import { colors } from './src/theme'
 
 import LoginScreen from './src/screens/LoginScreen'
 import HomeScreen from './src/screens/HomeScreen'
@@ -25,12 +26,12 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 const DARK = {
   dark: true,
   colors: {
-    primary: '#5865f2',
-    background: '#313338',
-    card: '#2b2d31',
-    text: '#ffffff',
-    border: '#1e1f22',
-    notification: '#5865f2',
+    primary: colors.accent,
+    background: colors.bg,
+    card: colors.surface,
+    text: colors.text,
+    border: colors.border,
+    notification: colors.amber,
   },
   fonts: {
     regular: { fontFamily: 'System', fontWeight: '400' as const },
@@ -54,9 +55,9 @@ export default function App() {
       <StatusBar style="light" />
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: '#2b2d31' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: '600' },
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.text,
+          headerTitleStyle: { fontWeight: '700' },
         }}
       >
         {!user ? (

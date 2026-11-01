@@ -117,15 +117,15 @@ export default function VoiceRoom({ roomName, onLeave }: {
 
   if (status === 'error') return (
     <div style={{ padding: 32, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-      <p style={{ color: '#e85c6a', fontSize: '0.875rem', maxWidth: 320, lineHeight: 1.5 }}>{errorMsg}</p>
-      <button onClick={() => onLeaveRef.current()} style={{ color: '#c96b82', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}>Kapat</button>
+      <p style={{ color: '#FF8A7A', fontSize: '0.875rem', maxWidth: 320, lineHeight: 1.5 }}>{errorMsg}</p>
+      <button onClick={() => onLeaveRef.current()} style={{ color: '#4FD1A5', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}>Kapat</button>
     </div>
   )
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', padding: '40px 24px 32px', gap: 32 }}>
       {status === 'connecting' && (
-        <p style={{ color: '#8a6870', fontSize: '0.875rem', fontStyle: 'italic' }}>Bağlanıyor...</p>
+        <p style={{ color: '#8A919C', fontSize: '0.875rem', fontStyle: 'italic' }}>Bağlanıyor...</p>
       )}
 
       {/* Participants */}
@@ -135,11 +135,11 @@ export default function VoiceRoom({ roomName, onLeave }: {
             <div style={{
               position: 'relative',
               width: 80, height: 80, borderRadius: '50%',
-              background: p.isLocal ? 'linear-gradient(135deg, #8b3a52, #b04e6a)' : 'linear-gradient(135deg, #2d1420, #4a2030)',
+              background: p.isLocal ? 'var(--accent)' : 'linear-gradient(135deg, #22262E, #343944)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.75rem', fontWeight: 700, color: '#f0e4e7',
-              border: `3px solid ${p.isSpeaking ? '#43b581' : 'rgba(139,58,82,0.25)'}`,
-              boxShadow: p.isSpeaking ? '0 0 20px rgba(67,181,93,0.5)' : '0 4px 20px rgba(0,0,0,0.4)',
+              fontSize: '1.75rem', fontWeight: 700, color: p.isLocal ? 'var(--accent-ink)' : '#E8EAEE',
+              border: `3px solid ${p.isSpeaking ? '#F2B544' : 'rgba(79,209,165,0.25)'}`,
+              boxShadow: p.isSpeaking ? '0 0 20px rgba(242,181,68,0.5)' : '0 4px 20px rgba(0,0,0,0.4)',
               transition: 'border-color 0.2s, box-shadow 0.2s',
             }}>
               {p.name[0]?.toUpperCase()}
@@ -154,13 +154,13 @@ export default function VoiceRoom({ roomName, onLeave }: {
                 </div>
               )}
             </div>
-            <span style={{ fontSize: '0.8125rem', color: p.isLocal ? '#c96b82' : '#c4a0ab', maxWidth: 90, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '0.8125rem', color: p.isLocal ? '#4FD1A5' : '#C9CDD4', maxWidth: 90, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {p.name}{p.isLocal ? ' (sen)' : ''}
             </span>
           </div>
         ))}
         {status === 'connected' && participants.length <= 1 && (
-          <p style={{ fontSize: '0.8125rem', color: '#5a3d45', fontStyle: 'italic', textAlign: 'center', maxWidth: 200 }}>
+          <p style={{ fontSize: '0.8125rem', color: '#5C626D', fontStyle: 'italic', textAlign: 'center', maxWidth: 200 }}>
             Başka kimse yok. Kanalı paylaş ve arkadaşlarını bekle.
           </p>
         )}
@@ -169,14 +169,14 @@ export default function VoiceRoom({ roomName, onLeave }: {
       {/* Controls */}
       <div style={{
         display: 'flex', gap: 16, padding: '16px 28px',
-        background: 'rgba(6,2,8,0.8)', borderRadius: 24,
-        border: '1px solid rgba(139,58,82,0.25)',
+        background: 'rgba(15,17,21,0.8)', borderRadius: 24,
+        border: '1px solid rgba(79,209,165,0.25)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}>
         <button onClick={toggleMute} title={isMuted ? 'Sesi Aç' : 'Sessiz'}
           style={{
             width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
-            background: isMuted ? '#ed4245' : 'rgba(139,58,82,0.25)', color: '#f0e4e7',
+            background: isMuted ? '#ed4245' : 'rgba(79,209,165,0.25)', color: '#E8EAEE',
             display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'opacity 0.15s',
             boxShadow: isMuted ? '0 4px 16px rgba(237,66,69,0.4)' : 'none',
           }}
@@ -188,9 +188,9 @@ export default function VoiceRoom({ roomName, onLeave }: {
         <button onClick={leave} title="Ayrıl"
           style={{
             width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
-            background: '#ed4245', color: '#fff',
+            background: '#FF8A7A', color: '#2A0E09',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 20px rgba(237,66,69,0.5)', transition: 'opacity 0.15s',
+            boxShadow: '0 4px 20px rgba(255,138,122,0.4)', transition: 'opacity 0.15s',
           }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}

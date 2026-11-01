@@ -10,7 +10,7 @@ import type { Community } from '@/store/app'
 type Step = 'pick' | 'create' | 'join'
 
 const inputCls = 'w-full px-3.5 py-2.5 rounded-lg text-sm outline-none'
-const inputStyle = { background: '#10050a', border: '1px solid rgba(139,58,82,0.3)', color: '#f0e4e7' }
+const inputStyle = { background: '#0B0D10', border: '1px solid rgba(79,209,165,0.3)', color: '#E8EAEE' }
 
 export default function CommunityModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [step, setStep] = useState<Step>('pick')
@@ -30,8 +30,8 @@ function PickStep({ onCreate, onJoin }: { onCreate: () => void; onJoin: () => vo
     <div>
       <div className="text-center mb-6">
         <div className="text-3xl mb-2">🌸</div>
-        <h2 className="text-xl font-bold mb-1" style={{ color: '#f0e4e7' }}>Topluluğa Başla</h2>
-        <p className="text-sm" style={{ color: '#7a5a62' }}>Kendi topluluğunu kur ya da var olana katıl</p>
+        <h2 className="text-xl font-bold mb-1" style={{ color: '#E8EAEE' }}>Topluluğa Başla</h2>
+        <p className="text-sm" style={{ color: '#7C838F' }}>Kendi topluluğunu kur ya da var olana katıl</p>
       </div>
       <div className="space-y-2">
         {[
@@ -42,15 +42,15 @@ function PickStep({ onCreate, onJoin }: { onCreate: () => void; onJoin: () => vo
             key={label}
             onClick={fn}
             className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors text-left group"
-            style={{ background: 'rgba(139,58,82,0.08)', border: '1px solid rgba(139,58,82,0.18)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(139,58,82,0.18)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(139,58,82,0.08)')}
+            style={{ background: 'rgba(79,209,165,0.08)', border: '1px solid rgba(79,209,165,0.18)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(79,209,165,0.18)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(79,209,165,0.08)')}
           >
             <div>
-              <p className="font-semibold text-sm" style={{ color: '#f0e4e7' }}>{label}</p>
-              <p className="text-xs" style={{ color: '#7a5a62' }}>{sub}</p>
+              <p className="font-semibold text-sm" style={{ color: '#E8EAEE' }}>{label}</p>
+              <p className="text-xs" style={{ color: '#7C838F' }}>{sub}</p>
             </div>
-            <span style={{ color: '#9a7a82' }}>›</span>
+            <span style={{ color: '#9AA1AD' }}>›</span>
           </button>
         ))}
       </div>
@@ -86,12 +86,12 @@ function CreateStep({ onClose, onBack }: { onClose: () => void; onBack: () => vo
 
   return (
     <div>
-      <button onClick={onBack} className="text-sm mb-4 flex items-center gap-1 transition-colors" style={{ color: '#9a7a82' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#f0e4e7')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9a7a82')}>
+      <button onClick={onBack} className="text-sm mb-4 flex items-center gap-1 transition-colors" style={{ color: '#9AA1AD' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#E8EAEE')} onMouseLeave={(e) => (e.currentTarget.style.color = '#9AA1AD')}>
         ← Geri
       </button>
-      <h2 className="text-xl font-bold mb-1" style={{ color: '#f0e4e7' }}>Topluluğunu Özelleştir</h2>
-      <p className="text-sm mb-5" style={{ color: '#7a5a62' }}>Topluluğuna bir ad ver. Daha sonra değiştirebilirsin.</p>
+      <h2 className="text-xl font-bold mb-1" style={{ color: '#E8EAEE' }}>Topluluğunu Özelleştir</h2>
+      <p className="text-sm mb-5" style={{ color: '#7C838F' }}>Topluluğuna bir ad ver. Daha sonra değiştirebilirsin.</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {[
@@ -99,7 +99,7 @@ function CreateStep({ onClose, onBack }: { onClose: () => void; onBack: () => vo
           { key: 'description', label: 'Açıklama (opsiyonel)', placeholder: 'Topluluk hakkında kısa bir açıklama', required: false },
         ].map(({ key, label, placeholder, required }) => (
           <div key={key}>
-            <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#c4a0a8' }}>{label}</label>
+            <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#C9CDD4' }}>{label}</label>
             <input
               type="text"
               value={form[key as keyof typeof form]}
@@ -109,19 +109,19 @@ function CreateStep({ onClose, onBack }: { onClose: () => void; onBack: () => vo
               style={inputStyle}
               required={required}
               autoFocus={key === 'name'}
-              onFocus={(e) => (e.target.style.borderColor = '#8b3a52')}
-              onBlur={(e) => (e.target.style.borderColor = 'rgba(139,58,82,0.3)')}
+              onFocus={(e) => (e.target.style.borderColor = '#4FD1A5')}
+              onBlur={(e) => (e.target.style.borderColor = 'rgba(79,209,165,0.3)')}
             />
           </div>
         ))}
 
-        {error && <p className="text-sm" style={{ color: '#e85c6a' }}>{error}</p>}
+        {error && <p className="text-sm" style={{ color: '#FF8A7A' }}>{error}</p>}
 
         <button
           type="submit"
           disabled={!form.name.trim() || loading}
           className="w-full py-2.5 rounded-xl font-semibold text-sm mt-1 transition-opacity"
-          style={{ background: 'linear-gradient(135deg, #8b3a52, #a84f68)', color: '#f0e4e7', opacity: (!form.name.trim() || loading) ? 0.5 : 1 }}
+          style={{ background: 'var(--accent)', color: 'var(--accent-ink)', opacity: (!form.name.trim() || loading) ? 0.5 : 1 }}
         >
           {loading ? 'Oluşturuluyor...' : 'Topluluk Oluştur'}
         </button>
@@ -159,13 +159,13 @@ function JoinStep({ onClose, onBack }: { onClose: () => void; onBack: () => void
 
   return (
     <div>
-      <button onClick={onBack} className="text-sm mb-4 transition-colors" style={{ color: '#9a7a82' }}>← Geri</button>
-      <h2 className="text-xl font-bold mb-1" style={{ color: '#f0e4e7' }}>Topluluğa Katıl</h2>
-      <p className="text-sm mb-5" style={{ color: '#7a5a62' }}>Davet kodunu girerek katıl.</p>
+      <button onClick={onBack} className="text-sm mb-4 transition-colors" style={{ color: '#9AA1AD' }}>← Geri</button>
+      <h2 className="text-xl font-bold mb-1" style={{ color: '#E8EAEE' }}>Topluluğa Katıl</h2>
+      <p className="text-sm mb-5" style={{ color: '#7C838F' }}>Davet kodunu girerek katıl.</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#c4a0a8' }}>Davet Kodu</label>
+          <label className="block text-xs uppercase tracking-widest font-semibold mb-1.5" style={{ color: '#C9CDD4' }}>Davet Kodu</label>
           <input
             type="text"
             value={code}
@@ -174,19 +174,19 @@ function JoinStep({ onClose, onBack }: { onClose: () => void; onBack: () => void
             className={`${inputCls} font-mono`}
             style={inputStyle}
             autoFocus
-            onFocus={(e) => (e.target.style.borderColor = '#8b3a52')}
-            onBlur={(e) => (e.target.style.borderColor = 'rgba(139,58,82,0.3)')}
+            onFocus={(e) => (e.target.style.borderColor = '#4FD1A5')}
+            onBlur={(e) => (e.target.style.borderColor = 'rgba(79,209,165,0.3)')}
           />
-          <p className="text-xs mt-1.5" style={{ color: '#7a5a62' }}>Davet kodunu topluluk sahibinden alabilirsin</p>
+          <p className="text-xs mt-1.5" style={{ color: '#7C838F' }}>Davet kodunu topluluk sahibinden alabilirsin</p>
         </div>
 
-        {error && <p className="text-sm" style={{ color: '#e85c6a' }}>{error}</p>}
+        {error && <p className="text-sm" style={{ color: '#FF8A7A' }}>{error}</p>}
 
         <button
           type="submit"
           disabled={!code.trim() || loading}
           className="w-full py-2.5 rounded-xl font-semibold text-sm transition-opacity"
-          style={{ background: 'linear-gradient(135deg, #8b3a52, #a84f68)', color: '#f0e4e7', opacity: (!code.trim() || loading) ? 0.5 : 1 }}
+          style={{ background: 'var(--accent)', color: 'var(--accent-ink)', opacity: (!code.trim() || loading) ? 0.5 : 1 }}
         >
           {loading ? 'Katılınıyor...' : 'Topluluğa Katıl'}
         </button>

@@ -1,10 +1,23 @@
 import type { Metadata, Viewport } from 'next'
-import { Lora } from 'next/font/google'
+import { Bricolage_Grotesque, Figtree, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
-const lora = Lora({
-  subsets: ['latin'],
-  variable: '--font-lora',
+const figtree = Figtree({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-figtree',
+  display: 'swap',
+})
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-bricolage',
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['500'],
+  variable: '--font-jetbrains',
   display: 'swap',
 })
 
@@ -16,8 +29,8 @@ export const viewport: Viewport = {
   userScalable: false,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#8b3a52' },
-    { media: '(prefers-color-scheme: light)', color: '#8b3a52' },
+    { media: '(prefers-color-scheme: dark)', color: '#0F1115' },
+    { media: '(prefers-color-scheme: light)', color: '#0F1115' },
   ],
 }
 
@@ -40,15 +53,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr" className={lora.variable}>
+    <html lang="tr" className={`${figtree.variable} ${bricolage.variable} ${jetbrains.variable}`}>
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="msapplication-TileColor" content="#8b3a52" />
+        <meta name="msapplication-TileColor" content="#0F1115" />
         <link rel="apple-touch-icon" href="/apple-icon" />
       </head>
-      <body style={{ fontFamily: "'Lora', Georgia, serif" }}>{children}</body>
+      <body>{children}</body>
     </html>
   )
 }

@@ -7,6 +7,7 @@ import { useAppStore, type Community } from '../store/app'
 import { useAuthStore } from '../store/auth'
 import { disconnectSocket } from '../lib/socket'
 import type { RootStackParamList } from '../../App'
+import { colors } from '../theme'
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Home'>
 
@@ -112,27 +113,27 @@ export default function HomeScreen() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#313338' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, paddingTop: 12, borderBottomWidth: 1, borderBottomColor: '#1e1f22' },
-  greeting: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  subtext: { color: '#96989d', fontSize: 13 },
+  container: { flex: 1, backgroundColor: colors.bg },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, paddingTop: 12, borderBottomWidth: 1, borderBottomColor: colors.inset },
+  greeting: { color: colors.text, fontSize: 16, fontWeight: '600' },
+  subtext: { color: colors.textMuted, fontSize: 13 },
   headerRight: { flexDirection: 'row', gap: 8, alignItems: 'center' },
-  dmBtn: { backgroundColor: '#383a40', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
+  dmBtn: { backgroundColor: colors.elevated, borderRadius: 14, paddingHorizontal: 10, paddingVertical: 6 },
   dmBtnText: { fontSize: 18 },
-  logoutBtn: { backgroundColor: '#383a40', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
-  logoutText: { color: '#96989d', fontSize: 13 },
+  logoutBtn: { backgroundColor: colors.elevated, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
+  logoutText: { color: colors.textMuted, fontSize: 13 },
   actions: { flexDirection: 'row', gap: 8, padding: 16, paddingBottom: 8 },
-  actionBtn: { flex: 1, backgroundColor: '#5865f2', borderRadius: 8, paddingVertical: 10, alignItems: 'center' },
-  actionBtnSecondary: { backgroundColor: '#383a40' },
-  actionBtnText: { color: '#fff', fontWeight: '600', fontSize: 14 },
-  actionBtnTextSecondary: { color: '#dbdee1', fontWeight: '600', fontSize: 14 },
-  sectionTitle: { color: '#96989d', fontSize: 12, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, paddingHorizontal: 16, paddingVertical: 8 },
-  empty: { color: '#96989d', fontSize: 14, textAlign: 'center', padding: 32 },
-  communityItem: { flexDirection: 'row', alignItems: 'center', padding: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: '#2b2d31' },
-  communityIcon: { width: 44, height: 44, borderRadius: 14, backgroundColor: '#5865f2', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  communityIconText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  actionBtn: { flex: 1, backgroundColor: colors.accent, borderRadius: 14, paddingVertical: 10, alignItems: 'center' },
+  actionBtnSecondary: { backgroundColor: colors.elevated },
+  actionBtnText: { color: colors.ink, fontWeight: '600', fontSize: 14 },
+  actionBtnTextSecondary: { color: colors.text, fontWeight: '600', fontSize: 14 },
+  sectionTitle: { color: colors.textMuted, fontSize: 12, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, paddingHorizontal: 16, paddingVertical: 8 },
+  empty: { color: colors.textMuted, fontSize: 14, textAlign: 'center', padding: 32 },
+  communityItem: { flexDirection: 'row', alignItems: 'center', padding: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: colors.surface },
+  communityIcon: { width: 44, height: 44, borderRadius: 14, backgroundColor: colors.accent, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  communityIconText: { color: colors.ink, fontSize: 18, fontWeight: 'bold' },
   communityInfo: { flex: 1 },
-  communityName: { color: '#fff', fontSize: 15, fontWeight: '600' },
-  communityDesc: { color: '#96989d', fontSize: 13 },
-  chevron: { color: '#96989d', fontSize: 20 },
+  communityName: { color: colors.text, fontSize: 15, fontWeight: '600' },
+  communityDesc: { color: colors.textMuted, fontSize: 13 },
+  chevron: { color: colors.textMuted, fontSize: 20 },
 })

@@ -39,11 +39,11 @@ export default function Modal({
         className="animate-scale-in w-full relative"
         style={{
           maxWidth: width,
-          background: 'linear-gradient(145deg, rgba(22,8,30,0.98), rgba(14,5,18,0.99))',
-          border: '1px solid rgba(139,58,82,0.38)',
+          background: 'linear-gradient(145deg, rgba(28,32,40,0.98), rgba(11,13,16,0.99))',
+          border: '1px solid rgba(79,209,165,0.38)',
           borderRadius: 20,
           padding: '28px 28px 24px',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(139,58,82,0.08) inset',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(79,209,165,0.08) inset',
           maxHeight: '90vh',
           overflowY: 'auto',
         }}
@@ -56,23 +56,23 @@ export default function Modal({
             position: 'absolute', top: 16, right: 16,
             width: 28, height: 28,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(139,58,82,0.1)', border: 'none', borderRadius: 8,
-            color: '#5a3d45', cursor: 'pointer', transition: 'all 0.15s',
+            background: 'rgba(79,209,165,0.1)', border: 'none', borderRadius: 8,
+            color: '#5C626D', cursor: 'pointer', transition: 'all 0.15s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.color = '#f0e4e7'; e.currentTarget.style.background = 'rgba(139,58,82,0.25)' }}
-          onMouseLeave={e => { e.currentTarget.style.color = '#5a3d45'; e.currentTarget.style.background = 'rgba(139,58,82,0.1)' }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#E8EAEE'; e.currentTarget.style.background = 'rgba(79,209,165,0.25)' }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#5C626D'; e.currentTarget.style.background = 'rgba(79,209,165,0.1)' }}
           aria-label="Kapat"
         >
           <X size={14} />
         </button>
 
         {title && (
-          <h2 style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#f0e4e7', marginBottom: subtitle ? 4 : 20, paddingRight: 32 }}>
+          <h2 style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#E8EAEE', marginBottom: subtitle ? 4 : 20, paddingRight: 32 }}>
             {title}
           </h2>
         )}
         {subtitle && (
-          <p style={{ fontSize: '0.8125rem', color: '#5a3d45', fontStyle: 'italic', marginBottom: 20 }}>
+          <p style={{ fontSize: '0.8125rem', color: '#5C626D', fontStyle: 'italic', marginBottom: 20 }}>
             {subtitle}
           </p>
         )}

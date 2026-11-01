@@ -6,7 +6,7 @@ import api from '@/lib/api'
 import { useFriendsStore, type FriendUser, type FriendRequest } from '@/store/friends'
 import { useDMStore } from '@/store/dm'
 
-const inputStyle = { background: '#10050a', border: '1px solid rgba(139,58,82,0.3)', color: '#f0e4e7' }
+const inputStyle = { background: '#0B0D10', border: '1px solid rgba(79,209,165,0.3)', color: '#E8EAEE' }
 
 export default function DMPage() {
   const router = useRouter()
@@ -58,8 +58,8 @@ export default function DMPage() {
   return (
     <div className="flex flex-col h-full" style={{ background: 'transparent' }}>
       {/* Header */}
-      <div className="h-12 px-4 flex items-center gap-4 shrink-0" style={{ borderBottom: '1px solid rgba(139,58,82,0.15)' }}>
-        <span className="font-bold text-sm" style={{ color: '#f0e4e7' }}>Arkadaşlar</span>
+      <div className="h-12 px-4 flex items-center gap-4 shrink-0" style={{ borderBottom: '1px solid rgba(79,209,165,0.15)' }}>
+        <span className="font-bold text-sm" style={{ color: '#E8EAEE' }}>Arkadaşlar</span>
         {[
           { key: 'friends', label: `Tümü (${friends.length})` },
           { key: 'requests', label: 'Bekleyen', badge: receivedRequests.length },
@@ -69,13 +69,13 @@ export default function DMPage() {
             onClick={() => setTab(key as 'friends' | 'requests')}
             className="text-sm px-3 py-1 rounded-lg transition-all font-medium"
             style={{
-              background: tab === key ? 'rgba(139,58,82,0.22)' : 'transparent',
-              color: tab === key ? '#f0e4e7' : '#9a7a82',
+              background: tab === key ? 'rgba(79,209,165,0.22)' : 'transparent',
+              color: tab === key ? '#E8EAEE' : '#9AA1AD',
             }}
           >
             {label}
             {badge ? (
-              <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full font-bold" style={{ background: '#e85c6a', color: '#fff' }}>
+              <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full font-bold" style={{ background: '#FF8A7A', color: '#2A0E09' }}>
                 {badge}
               </span>
             ) : null}
@@ -86,7 +86,7 @@ export default function DMPage() {
       <div className="flex-1 overflow-y-auto p-5 max-w-2xl w-full mx-auto">
         {/* Add friend */}
         <form onSubmit={sendRequest} className="mb-6">
-          <p className="font-semibold mb-2 text-sm" style={{ color: '#f0e4e7' }}>Arkadaş Ekle</p>
+          <p className="font-semibold mb-2 text-sm" style={{ color: '#E8EAEE' }}>Arkadaş Ekle</p>
           <div className="flex gap-2">
             <input
               value={addInput}
@@ -94,54 +94,54 @@ export default function DMPage() {
               placeholder="Kullanıcı adı gir"
               className="flex-1 px-3.5 py-2.5 rounded-xl text-sm outline-none"
               style={inputStyle}
-              onFocus={(e) => (e.target.style.borderColor = '#8b3a52')}
-              onBlur={(e) => (e.target.style.borderColor = 'rgba(139,58,82,0.3)')}
+              onFocus={(e) => (e.target.style.borderColor = '#4FD1A5')}
+              onBlur={(e) => (e.target.style.borderColor = 'rgba(79,209,165,0.3)')}
             />
             <button
               type="submit"
               disabled={!addInput.trim()}
               className="px-5 py-2 rounded-xl text-sm font-semibold transition-opacity"
-              style={{ background: 'linear-gradient(135deg, #8b3a52, #a84f68)', color: '#f0e4e7', opacity: !addInput.trim() ? 0.5 : 1 }}
+              style={{ background: 'var(--accent)', color: 'var(--accent-ink)', opacity: !addInput.trim() ? 0.5 : 1 }}
             >
               Gönder
             </button>
           </div>
-          {addError && <p className="text-xs mt-1.5" style={{ color: '#e85c6a' }}>{addError}</p>}
+          {addError && <p className="text-xs mt-1.5" style={{ color: '#FF8A7A' }}>{addError}</p>}
           {addSuccess && <p className="text-xs mt-1.5" style={{ color: '#43b581' }}>{addSuccess}</p>}
         </form>
 
         {tab === 'friends' && (
           <div className="space-y-1">
             {friends.length === 0 && (
-              <p className="text-sm text-center py-10 italic" style={{ color: '#7a5a62' }}>Henüz arkadaşın yok</p>
+              <p className="text-sm text-center py-10 italic" style={{ color: '#7C838F' }}>Henüz arkadaşın yok</p>
             )}
             {friends.map((f: FriendUser) => (
               <div
                 key={f.id}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl group transition-all cursor-default"
                 style={{ background: 'transparent' }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(139,58,82,0.08)')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(79,209,165,0.08)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0"
-                  style={{ background: 'linear-gradient(135deg, #8b3a52, #a84f68)', color: '#f0e4e7' }}>
+                  style={{ background: 'var(--accent)', color: 'var(--accent-ink)' }}>
                   {f.displayName[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm" style={{ color: '#f0e4e7' }}>{f.displayName}</p>
-                  <p className="text-xs" style={{ color: '#7a5a62' }}>@{f.username}</p>
+                  <p className="font-medium text-sm" style={{ color: '#E8EAEE' }}>{f.displayName}</p>
+                  <p className="text-xs" style={{ color: '#7C838F' }}>@{f.username}</p>
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => startDM(f.id)} title="Mesaj gönder"
-                    className="text-xl transition-colors" style={{ color: '#9a7a82' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = '#c96b82')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = '#9a7a82')}>
+                    className="text-xl transition-colors" style={{ color: '#9AA1AD' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#4FD1A5')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = '#9AA1AD')}>
                     💬
                   </button>
                   <button onClick={() => removeFriendship(f.id)} title="Arkadaşlıktan çıkar"
-                    className="text-sm transition-colors" style={{ color: '#9a7a82' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = '#e85c6a')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = '#9a7a82')}>
+                    className="text-sm transition-colors" style={{ color: '#9AA1AD' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#FF8A7A')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = '#9AA1AD')}>
                     ✕
                   </button>
                 </div>
@@ -154,18 +154,18 @@ export default function DMPage() {
           <div className="space-y-4">
             {receivedRequests.length > 0 && (
               <div>
-                <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#7a5a62' }}>Gelen İstekler</p>
+                <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#7C838F' }}>Gelen İstekler</p>
                 <div className="space-y-2">
                   {receivedRequests.map((r: FriendRequest) => (
                     <div key={r.id} className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                      style={{ background: 'rgba(139,58,82,0.08)', border: '1px solid rgba(139,58,82,0.18)' }}>
+                      style={{ background: 'rgba(79,209,165,0.08)', border: '1px solid rgba(79,209,165,0.18)' }}>
                       <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold shrink-0"
-                        style={{ background: 'linear-gradient(135deg, #8b3a52, #a84f68)', color: '#f0e4e7' }}>
+                        style={{ background: 'var(--accent)', color: 'var(--accent-ink)' }}>
                         {r.sender!.displayName[0].toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium" style={{ color: '#f0e4e7' }}>{r.sender!.displayName}</p>
-                        <p className="text-xs" style={{ color: '#7a5a62' }}>@{r.sender!.username}</p>
+                        <p className="text-sm font-medium" style={{ color: '#E8EAEE' }}>{r.sender!.displayName}</p>
+                        <p className="text-xs" style={{ color: '#7C838F' }}>@{r.sender!.username}</p>
                       </div>
                       <div className="flex gap-2">
                         <button onClick={() => handleRequest(r.id, 'accept')}
@@ -175,7 +175,7 @@ export default function DMPage() {
                         </button>
                         <button onClick={() => handleRequest(r.id, 'reject')}
                           className="text-xs px-3 py-1.5 rounded-lg font-semibold transition-all"
-                          style={{ background: 'rgba(232,92,106,0.15)', color: '#e85c6a', border: '1px solid rgba(232,92,106,0.3)' }}>
+                          style={{ background: 'rgba(255,138,122,0.15)', color: '#FF8A7A', border: '1px solid rgba(255,138,122,0.3)' }}>
                           Reddet
                         </button>
                       </div>
@@ -187,18 +187,18 @@ export default function DMPage() {
 
             {sentRequests.length > 0 && (
               <div>
-                <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#7a5a62' }}>Gönderilen İstekler</p>
+                <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#7C838F' }}>Gönderilen İstekler</p>
                 <div className="space-y-2">
                   {sentRequests.map((r: FriendRequest) => (
                     <div key={r.id} className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                      style={{ background: 'rgba(139,58,82,0.06)', border: '1px solid rgba(139,58,82,0.15)' }}>
+                      style={{ background: 'rgba(79,209,165,0.06)', border: '1px solid rgba(79,209,165,0.15)' }}>
                       <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold shrink-0"
-                        style={{ background: 'rgba(139,58,82,0.3)', color: '#f0e4e7' }}>
+                        style={{ background: 'rgba(79,209,165,0.3)', color: '#E8EAEE' }}>
                         {r.receiver!.displayName[0].toUpperCase()}
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium" style={{ color: '#f0e4e7' }}>{r.receiver!.displayName}</p>
-                        <p className="text-xs italic" style={{ color: '#7a5a62' }}>Bekliyor...</p>
+                        <p className="text-sm font-medium" style={{ color: '#E8EAEE' }}>{r.receiver!.displayName}</p>
+                        <p className="text-xs italic" style={{ color: '#7C838F' }}>Bekliyor...</p>
                       </div>
                     </div>
                   ))}
@@ -207,7 +207,7 @@ export default function DMPage() {
             )}
 
             {receivedRequests.length === 0 && sentRequests.length === 0 && (
-              <p className="text-sm text-center py-10 italic" style={{ color: '#7a5a62' }}>Bekleyen istek yok</p>
+              <p className="text-sm text-center py-10 italic" style={{ color: '#7C838F' }}>Bekleyen istek yok</p>
             )}
           </div>
         )}

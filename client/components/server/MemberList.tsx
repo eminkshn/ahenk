@@ -10,7 +10,7 @@ import api from '@/lib/api'
 
 const STATUS_COLOR: Record<string, string> = {
   ONLINE:  '#3ba55d',
-  IDLE:    '#faa61a',
+  IDLE:    '#F2B544',
   DND:     '#ed4245',
   OFFLINE: '#4f545c',
 }
@@ -129,9 +129,9 @@ function Section({ label, members, hoveredId, isOwner, currentUserId, onHover, o
     <div style={{ marginBottom: 8 }}>
       <button
         onClick={onToggle}
-        style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', padding: '2px 12px 6px', background: 'none', border: 'none', cursor: onToggle ? 'pointer' : 'default', color: '#5a3d45', transition: 'color 0.15s' }}
-        onMouseEnter={e => { if (onToggle) e.currentTarget.style.color = '#8a6870' }}
-        onMouseLeave={e => { e.currentTarget.style.color = '#5a3d45' }}
+        style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%', padding: '2px 12px 6px', background: 'none', border: 'none', cursor: onToggle ? 'pointer' : 'default', color: '#5C626D', transition: 'color 0.15s' }}
+        onMouseEnter={e => { if (onToggle) e.currentTarget.style.color = '#8A919C' }}
+        onMouseLeave={e => { e.currentTarget.style.color = '#5C626D' }}
       >
         {onToggle ? (collapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />) : null}
         <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em' }}>
@@ -169,24 +169,24 @@ function MemberRow({ member: m, hovered, isMe, onHover, onLeave, muted }: {
       onMouseLeave={onLeave}
       style={{
         width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-        padding: '5px 12px', background: hovered ? 'rgba(139,58,82,0.1)' : 'none',
+        padding: '5px 12px', background: hovered ? 'rgba(79,209,165,0.1)' : 'none',
         border: 'none', cursor: 'pointer', textAlign: 'left', transition: 'background 0.12s',
       }}
     >
       <div style={{ position: 'relative', flexShrink: 0 }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #8b3a52, #b04e6a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#f0e4e7', opacity: muted ? 0.5 : 1 }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-ink)', opacity: muted ? 0.5 : 1 }}>
           {m.user.displayName[0].toUpperCase()}
         </div>
         <span style={{ position: 'absolute', bottom: -1, right: -1, width: 11, height: 11, borderRadius: '50%', background: STATUS_COLOR[status] ?? STATUS_COLOR.OFFLINE, border: '2px solid var(--bg-surface)' }} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: muted ? '#5a3d45' : (topRole?.color ?? '#f0e4e7'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: muted ? '#5C626D' : (topRole?.color ?? '#E8EAEE'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {m.nickname ?? m.user.displayName}
           </span>
           {topRole && <Shield size={10} style={{ color: topRole.color, flexShrink: 0 }} />}
         </div>
-        {topRole && <span style={{ fontSize: '0.65rem', color: muted ? '#3d2030' : topRole.color, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{topRole.name}</span>}
+        {topRole && <span style={{ fontSize: '0.65rem', color: muted ? '#5C626D' : topRole.color, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{topRole.name}</span>}
       </div>
     </button>
   )
@@ -224,8 +224,8 @@ function ProfileCard({ member: m, roles, isOwner, isMe, anchor, onClose, onKick,
         top: cardTop,
         right: anchor.right,
         width: 240,
-        background: 'rgba(19,7,24,0.98)',
-        border: '1px solid rgba(139,58,82,0.35)',
+        background: 'rgba(22,25,32,0.98)',
+        border: '1px solid rgba(79,209,165,0.35)',
         borderRadius: 16,
         boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
         zIndex: 200,
@@ -234,21 +234,21 @@ function ProfileCard({ member: m, roles, isOwner, isMe, anchor, onClose, onKick,
       }}
     >
       {/* Banner */}
-      <div style={{ height: 60, background: 'linear-gradient(135deg, #2d0d1a, #4a1530)', position: 'relative' }}>
-        <div style={{ position: 'absolute', bottom: -22, left: 14, width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #8b3a52, #b04e6a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.125rem', fontWeight: 700, color: '#f0e4e7', border: '3px solid rgba(19,7,24,0.98)' }}>
+      <div style={{ height: 60, background: 'linear-gradient(135deg, #12352A, #1C2440)', position: 'relative' }}>
+        <div style={{ position: 'absolute', bottom: -22, left: 14, width: 44, height: 44, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-ink)', border: '3px solid rgba(22,25,32,0.98)' }}>
           {m.user.displayName[0].toUpperCase()}
         </div>
-        <div style={{ position: 'absolute', bottom: -8, right: 10, width: 16, height: 16, borderRadius: '50%', background: STATUS_COLOR[status], border: '3px solid rgba(19,7,24,0.98)' }} />
+        <div style={{ position: 'absolute', bottom: -8, right: 10, width: 16, height: 16, borderRadius: '50%', background: STATUS_COLOR[status], border: '3px solid rgba(22,25,32,0.98)' }} />
       </div>
 
       <div style={{ padding: '28px 14px 14px' }}>
-        <p style={{ fontWeight: 700, fontSize: '0.9375rem', color: topRole?.color ?? '#f0e4e7', marginBottom: 2 }}>{m.nickname ?? m.user.displayName}</p>
-        <p style={{ fontSize: '0.75rem', color: '#7a5a62', marginBottom: 4 }}>@{m.user.username}</p>
+        <p style={{ fontWeight: 700, fontSize: '0.9375rem', color: topRole?.color ?? '#E8EAEE', marginBottom: 2 }}>{m.nickname ?? m.user.displayName}</p>
+        <p style={{ fontSize: '0.75rem', color: '#7C838F', marginBottom: 4 }}>@{m.user.username}</p>
         <p style={{ fontSize: '0.7rem', color: STATUS_COLOR[status], marginBottom: 12 }}>{STATUS_LABEL[status]}</p>
 
         {m.roles.filter(mr => mr.role.name !== '@everyone').length > 0 && (
           <div style={{ marginBottom: 12 }}>
-            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.09em', color: '#5a3d45', marginBottom: 5 }}>Roller</p>
+            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.09em', color: '#5C626D', marginBottom: 5 }}>Roller</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {m.roles.filter(mr => mr.role.name !== '@everyone').map(mr => (
                 <span key={mr.role.id} style={{ padding: '2px 8px', borderRadius: 12, fontSize: '0.7rem', fontWeight: 600, background: mr.role.color + '22', color: mr.role.color, border: `1px solid ${mr.role.color}55` }}>
@@ -262,25 +262,25 @@ function ProfileCard({ member: m, roles, isOwner, isMe, anchor, onClose, onKick,
         {/* Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {!isMe && (
-            <button onClick={startDM} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', borderRadius: 9, background: 'rgba(139,58,82,0.15)', border: '1px solid rgba(139,58,82,0.25)', color: '#f0e4e7', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.28)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.15)')}>
-              <MessageCircle size={14} style={{ color: '#c96b82' }} /> Mesaj Gönder
+            <button onClick={startDM} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', borderRadius: 9, background: 'rgba(79,209,165,0.15)', border: '1px solid rgba(79,209,165,0.25)', color: '#E8EAEE', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,209,165,0.28)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(79,209,165,0.15)')}>
+              <MessageCircle size={14} style={{ color: '#4FD1A5' }} /> Mesaj Gönder
             </button>
           )}
           {isOwner && !isMe && (
             <>
-              <div style={{ width: '100%', height: 1, background: 'rgba(139,58,82,0.2)', margin: '2px 0' }} />
+              <div style={{ width: '100%', height: 1, background: 'rgba(79,209,165,0.2)', margin: '2px 0' }} />
               {roles.filter(r => r.name !== '@everyone').length > 0 && (
                 <div>
-                  <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.09em', color: '#5a3d45', marginBottom: 5 }}>Rol Ata</p>
+                  <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.09em', color: '#5C626D', marginBottom: 5 }}>Rol Ata</p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
                     {roles.filter(r => r.name !== '@everyone').map(r => {
                       const has = m.roles.some(mr => mr.role.id === r.id)
                       return (
                         <button key={r.id} onClick={() => onToggleRole(r.id, has)}
                           style={{ padding: '2px 8px', borderRadius: 12, fontSize: '0.7rem', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer', border: 'none', transition: 'all 0.12s',
-                            background: has ? r.color + '33' : 'rgba(139,58,82,0.12)', color: has ? r.color : '#9a7a82' }}>
+                            background: has ? r.color + '33' : 'rgba(79,209,165,0.12)', color: has ? r.color : '#9AA1AD' }}>
                           {r.name}
                         </button>
                       )
@@ -289,9 +289,9 @@ function ProfileCard({ member: m, roles, isOwner, isMe, anchor, onClose, onKick,
                 </div>
               )}
               <div style={{ display: 'flex', gap: 6 }}>
-                <button onClick={onKick} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '7px', borderRadius: 8, background: 'rgba(250,166,26,0.12)', border: 'none', color: '#faa61a', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.12s' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(250,166,26,0.22)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(250,166,26,0.12)')}>
+                <button onClick={onKick} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '7px', borderRadius: 8, background: 'rgba(242,181,68,0.12)', border: 'none', color: '#F2B544', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.12s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(242,181,68,0.22)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(242,181,68,0.12)')}>
                   <UserX size={12} /> At
                 </button>
                 <button onClick={onBan} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '7px', borderRadius: 8, background: 'rgba(237,66,69,0.12)', border: 'none', color: '#ed4245', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.12s' }}

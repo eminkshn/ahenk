@@ -8,34 +8,33 @@ export default function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   const href = user ? '/app' : '/'
 
   const cfg = {
-    sm: { flower: 16, text: '0.9375rem', gap: 6 },
-    md: { flower: 20, text: '1.125rem', gap: 7 },
-    lg: { flower: 26, text: '1.375rem', gap: 9 },
+    sm: { mark: 20, text: '1.0625rem', gap: 6 },
+    md: { mark: 24, text: '1.25rem', gap: 7 },
+    lg: { mark: 30, text: '1.5rem', gap: 9 },
   }[size]
 
   return (
     <Link href={href} style={{ display: 'flex', alignItems: 'center', gap: cfg.gap, textDecoration: 'none', userSelect: 'none' }}>
-      <FlowerSVG size={cfg.flower} />
-      <span style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 600, fontSize: cfg.text, color: '#f0e4e7', letterSpacing: '-0.01em', lineHeight: 1 }}>
+      <LogoMark size={cfg.mark} />
+      <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: cfg.text, color: 'var(--text-primary)', letterSpacing: '-0.045em', lineHeight: 1 }}>
         ahenk
       </span>
     </Link>
   )
 }
 
-function FlowerSVG({ size }: { size: number }) {
+// Speech bubble with three voice bars — community, order, privacy in rhythm.
+export function LogoMark({ size, bubble = 'var(--accent)', bars = 'var(--bg-base)' }: { size: number; bubble?: string; bars?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g transform="translate(12,12)">
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.92" transform="rotate(0)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.88" transform="rotate(60)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#b05a72" opacity="0.88" transform="rotate(120)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#b05a72" opacity="0.84" transform="rotate(180)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.84" transform="rotate(240)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.88" transform="rotate(300)" />
-      </g>
-      <circle cx="12" cy="12" r="3.8" fill="#f5dde5" />
-      <circle cx="12" cy="12" r="2.2" fill="#f0e4e7" />
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M20 7h24a14 14 0 0 1 14 14v13a14 14 0 0 1-14 14H25l-11 9v-10A14 14 0 0 1 6 34V21A14 14 0 0 1 20 7z" fill={bubble} />
+      {size > 16 && (
+        <>
+          <rect x="19.5" y="22" width="5.5" height="13" rx="2.75" fill={bars} />
+          <rect x="29.25" y="16" width="5.5" height="25" rx="2.75" fill={bars} />
+          <rect x="39" y="20" width="5.5" height="17" rx="2.75" fill={bars} />
+        </>
+      )}
     </svg>
   )
 }

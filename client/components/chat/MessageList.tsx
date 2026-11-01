@@ -46,10 +46,10 @@ export default function MessageList({ channelId }: { channelId: string }) {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '0 24px 24px' }}>
         <div style={{ textAlign: 'center', padding: '32px 24px', maxWidth: 320 }}>
           <div style={{ fontSize: '3rem', marginBottom: 12 }}>💬</div>
-          <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#f0e4e7', marginBottom: 6 }}>
+          <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: '#E8EAEE', marginBottom: 6 }}>
             Konuşmayı sen başlat!
           </p>
-          <p style={{ fontSize: '0.875rem', color: '#5a3d45', fontStyle: 'italic' }}>
+          <p style={{ fontSize: '0.875rem', color: '#5C626D', fontStyle: 'italic' }}>
             Bu kanalda henüz mesaj yok. İlk mesajı gönder. 🌸
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function MessageList({ channelId }: { channelId: string }) {
               display: 'flex',
               gap: 12,
               padding: `${grouped ? 2 : 16}px 16px ${grouped ? 1 : 2}px`,
-              background: isHovered ? 'rgba(139,58,82,0.05)' : 'transparent',
+              background: isHovered ? 'rgba(79,209,165,0.05)' : 'transparent',
               transition: 'background 0.1s',
               position: 'relative',
               marginTop: grouped ? 0 : 4,
@@ -88,25 +88,25 @@ export default function MessageList({ channelId }: { channelId: string }) {
                 width: 38, height: 38,
                 borderRadius: '50%',
                 background: isMe
-                  ? 'linear-gradient(135deg, #8b3a52, #b04e6a)'
-                  : 'linear-gradient(135deg, #2d1420, #4a2030)',
-                color: '#f0e4e7',
+                  ? 'var(--accent)'
+                  : 'linear-gradient(135deg, #22262E, #343944)',
+                color: isMe ? 'var(--accent-ink)' : '#E8EAEE',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '0.875rem', fontWeight: 700,
                 flexShrink: 0, marginTop: 2,
-                boxShadow: isMe ? '0 2px 8px rgba(139,58,82,0.3)' : 'none',
+                boxShadow: isMe ? '0 2px 8px rgba(79,209,165,0.3)' : 'none',
               }}>
                 {msg.author.displayName[0].toUpperCase()}
               </div>
             ) : (
               <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
                 {isHovered && (
-                  <span style={{ fontSize: '0.625rem', color: '#5a3d45' }}>
+                  <span style={{ fontSize: '0.625rem', color: '#5C626D' }}>
                     {new Date(msg.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 )}
                 {msg.starred && !isHovered && (
-                  <span style={{ fontSize: '0.625rem', color: '#faa61a' }}>★</span>
+                  <span style={{ fontSize: '0.625rem', color: '#F2B544' }}>★</span>
                 )}
               </div>
             )}
@@ -115,14 +115,14 @@ export default function MessageList({ channelId }: { channelId: string }) {
             <div style={{ flex: 1, minWidth: 0 }}>
               {!grouped && (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 3 }}>
-                  <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: isMe ? '#c96b82' : '#f0e4e7' }}>
+                  <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: isMe ? '#4FD1A5' : '#E8EAEE' }}>
                     {msg.author.displayName}
                   </span>
-                  <span style={{ fontSize: '0.7rem', color: '#5a3d45' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#5C626D' }}>
                     {new Date(msg.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                   {msg.starred && (
-                    <span title="Yıldızlanan mesaj" style={{ fontSize: '0.7rem', color: '#faa61a', lineHeight: 1 }}>★</span>
+                    <span title="Yıldızlanan mesaj" style={{ fontSize: '0.7rem', color: '#F2B544', lineHeight: 1 }}>★</span>
                   )}
                 </div>
               )}
@@ -147,16 +147,16 @@ export default function MessageList({ channelId }: { channelId: string }) {
                           style={{
                             display: 'flex', alignItems: 'center', gap: 4,
                             padding: '2px 8px', borderRadius: 12,
-                            background: iReacted ? 'rgba(139,58,82,0.25)' : 'rgba(139,58,82,0.1)',
-                            border: iReacted ? '1px solid rgba(139,58,82,0.5)' : '1px solid rgba(139,58,82,0.2)',
+                            background: iReacted ? 'rgba(79,209,165,0.25)' : 'rgba(79,209,165,0.1)',
+                            border: iReacted ? '1px solid rgba(79,209,165,0.5)' : '1px solid rgba(79,209,165,0.2)',
                             cursor: 'pointer', fontSize: '0.875rem', lineHeight: 1,
                             transition: 'all 0.1s',
                           }}
-                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.3)')}
-                          onMouseLeave={e => (e.currentTarget.style.background = iReacted ? 'rgba(139,58,82,0.25)' : 'rgba(139,58,82,0.1)')}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,209,165,0.3)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = iReacted ? 'rgba(79,209,165,0.25)' : 'rgba(79,209,165,0.1)')}
                         >
                           <span>{emoji}</span>
-                          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: iReacted ? '#c96b82' : '#8a6870' }}>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: iReacted ? '#4FD1A5' : '#8A919C' }}>
                             {users.length}
                           </span>
                         </button>
@@ -179,25 +179,25 @@ export default function MessageList({ channelId }: { channelId: string }) {
                     rows={2}
                     style={{
                       width: '100%', padding: '8px 12px',
-                      background: 'var(--bg-input)', border: '1px solid #8b3a52',
-                      borderRadius: 8, color: '#f0e4e7', fontSize: '0.9375rem',
+                      background: 'var(--bg-input)', border: '1px solid #4FD1A5',
+                      borderRadius: 8, color: '#E8EAEE', fontSize: '0.9375rem',
                       outline: 'none', resize: 'none', fontFamily: 'inherit',
-                      boxShadow: '0 0 0 3px rgba(139,58,82,0.15)',
+                      boxShadow: '0 0 0 3px rgba(79,209,165,0.15)',
                     }}
                   />
                   <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: '0.75rem' }}>
-                    <button onClick={() => submitEdit(msg.id)} style={{ color: '#c96b82', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                    <button onClick={() => submitEdit(msg.id)} style={{ color: '#4FD1A5', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
                       Kaydet
                     </button>
-                    <button onClick={() => setEditingId(null)} style={{ color: '#5a3d45', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                    <button onClick={() => setEditingId(null)} style={{ color: '#5C626D', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
                       İptal (Esc)
                     </button>
                   </div>
                 </div>
               ) : (
-                <p style={{ fontSize: '0.9375rem', lineHeight: 1.5, color: '#ddc8cc', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                <p style={{ fontSize: '0.9375rem', lineHeight: 1.5, color: '#D5D8DE', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
                   {msg.content}
-                  {msg.edited && <span style={{ fontSize: '0.7rem', marginLeft: 6, color: '#5a3d45', fontStyle: 'italic' }}>(düzenlendi)</span>}
+                  {msg.edited && <span style={{ fontSize: '0.7rem', marginLeft: 6, color: '#5C626D', fontStyle: 'italic' }}>(düzenlendi)</span>}
                 </p>
               )}
             </div>
@@ -218,13 +218,13 @@ export default function MessageList({ channelId }: { channelId: string }) {
                 <button
                   onClick={() => toggleStar(msg)}
                   title={msg.starred ? 'Yıldızı kaldır' : 'Yıldızla'}
-                  style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s', color: msg.starred ? '#faa61a' : '#8a6870' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#faa61a'; e.currentTarget.style.background = 'rgba(250,166,26,0.12)' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = msg.starred ? '#faa61a' : '#8a6870'; e.currentTarget.style.background = 'none' }}
+                  style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s', color: msg.starred ? '#F2B544' : '#8A919C' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#F2B544'; e.currentTarget.style.background = 'rgba(242,181,68,0.12)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = msg.starred ? '#F2B544' : '#8A919C'; e.currentTarget.style.background = 'none' }}
                 >
-                  <Star size={13} fill={msg.starred ? '#faa61a' : 'none'} />
+                  <Star size={13} fill={msg.starred ? '#F2B544' : 'none'} />
                 </button>
-                <div style={{ width: 1, height: 16, background: 'rgba(139,58,82,0.3)', margin: '0 2px' }} />
+                <div style={{ width: 1, height: 16, background: 'rgba(79,209,165,0.3)', margin: '0 2px' }} />
                 {REACTIONS.map((emoji) => (
                   <button key={emoji}
                     onClick={() => getSocket()?.emit('message:react', { messageId: msg.id, channelId, emoji })}
@@ -234,7 +234,7 @@ export default function MessageList({ channelId }: { channelId: string }) {
                       transition: 'transform 0.1s, background 0.1s',
                       lineHeight: 1,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.3)'; e.currentTarget.style.background = 'rgba(139,58,82,0.15)' }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.3)'; e.currentTarget.style.background = 'rgba(79,209,165,0.15)' }}
                     onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'none' }}
                     title={emoji}>
                     {emoji}
@@ -242,21 +242,21 @@ export default function MessageList({ channelId }: { channelId: string }) {
                 ))}
                 {isMe && (
                   <>
-                    <div style={{ width: 1, height: 16, background: 'rgba(139,58,82,0.3)', margin: '0 4px' }} />
+                    <div style={{ width: 1, height: 16, background: 'rgba(79,209,165,0.3)', margin: '0 4px' }} />
                     <button
                       onClick={() => { setEditingId(msg.id); setEditContent(msg.content) }}
-                      style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', color: '#8a6870', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s' }}
-                      onMouseEnter={e => { e.currentTarget.style.color = '#f0e4e7'; e.currentTarget.style.background = 'rgba(139,58,82,0.15)' }}
-                      onMouseLeave={e => { e.currentTarget.style.color = '#8a6870'; e.currentTarget.style.background = 'none' }}
+                      style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', color: '#8A919C', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#E8EAEE'; e.currentTarget.style.background = 'rgba(79,209,165,0.15)' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#8A919C'; e.currentTarget.style.background = 'none' }}
                       title="Düzenle"
                     >
                       <Pencil size={13} />
                     </button>
                     <button
                       onClick={() => getSocket()?.emit('message:delete', { messageId: msg.id, channelId })}
-                      style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', color: '#8a6870', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s' }}
-                      onMouseEnter={e => { e.currentTarget.style.color = '#e85c6a'; e.currentTarget.style.background = 'rgba(232,92,106,0.1)' }}
-                      onMouseLeave={e => { e.currentTarget.style.color = '#8a6870'; e.currentTarget.style.background = 'none' }}
+                      style={{ padding: '3px 5px', background: 'none', border: 'none', cursor: 'pointer', color: '#8A919C', borderRadius: 5, display: 'flex', transition: 'color 0.1s, background 0.1s' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#FF8A7A'; e.currentTarget.style.background = 'rgba(255,138,122,0.1)' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#8A919C'; e.currentTarget.style.background = 'none' }}
                       title="Sil"
                     >
                       <Trash2 size={13} />

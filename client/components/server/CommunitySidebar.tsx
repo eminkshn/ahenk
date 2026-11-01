@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/auth'
 import { useDMStore } from '@/store/dm'
 import CommunityModal from './CommunityModal'
 import ProfileModal from '@/components/ui/ProfileModal'
+import { LogoMark } from '@/components/ui/Logo'
 
 export default function CommunitySidebar({ channelOpen, onToggle }: {
   channelOpen: boolean
@@ -66,10 +67,10 @@ export default function CommunitySidebar({ channelOpen, onToggle }: {
           borderRadius: 12, transition: 'background 0.15s',
           flexShrink: 0,
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,58,82,0.15)')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(79,209,165,0.15)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'none')}
       >
-        <FlowerIcon size={22} />
+        <LogoMark size={26} />
       </button>
 
       <Divider />
@@ -81,13 +82,13 @@ export default function CommunitySidebar({ channelOpen, onToggle }: {
         style={{
           width: 40, height: 40,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: channelOpen ? 'rgba(139,58,82,0.18)' : 'none',
-          color: channelOpen ? '#c96b82' : '#5a3d45',
+          background: channelOpen ? 'rgba(79,209,165,0.18)' : 'none',
+          color: channelOpen ? '#4FD1A5' : '#5C626D',
           border: 'none', borderRadius: 10, cursor: 'pointer',
           transition: 'all 0.15s', flexShrink: 0,
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,58,82,0.25)'; e.currentTarget.style.color = '#f0e4e7' }}
-        onMouseLeave={e => { e.currentTarget.style.background = channelOpen ? 'rgba(139,58,82,0.18)' : 'none'; e.currentTarget.style.color = channelOpen ? '#c96b82' : '#5a3d45' }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(79,209,165,0.25)'; e.currentTarget.style.color = '#E8EAEE' }}
+        onMouseLeave={e => { e.currentTarget.style.background = channelOpen ? 'rgba(79,209,165,0.18)' : 'none'; e.currentTarget.style.color = channelOpen ? '#4FD1A5' : '#5C626D' }}
       >
         {channelOpen ? <X size={17} /> : <Menu size={17} />}
       </button>
@@ -145,11 +146,11 @@ export default function CommunitySidebar({ channelOpen, onToggle }: {
         style={{
           width: 40, height: 40,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'linear-gradient(135deg, #8b3a52, #b04e6a)',
-          color: '#f0e4e7', border: 'none', cursor: 'pointer',
+          background: 'var(--accent)',
+          color: 'var(--accent-ink)', border: 'none', cursor: 'pointer',
           borderRadius: '50%', fontSize: '0.875rem', fontWeight: 700,
           transition: 'opacity 0.15s, transform 0.15s',
-          boxShadow: '0 2px 8px rgba(139,58,82,0.35)', flexShrink: 0,
+          boxShadow: '0 2px 8px rgba(79,209,165,0.35)', flexShrink: 0,
         }}
         onMouseEnter={e => { e.currentTarget.style.opacity = '0.82'; e.currentTarget.style.transform = 'scale(1.07)' }}
         onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}
@@ -163,11 +164,11 @@ export default function CommunitySidebar({ channelOpen, onToggle }: {
         style={{
           width: 40, height: 40, marginTop: 4,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'none', color: '#5a3d45', border: 'none', cursor: 'pointer',
+          background: 'none', color: '#5C626D', border: 'none', cursor: 'pointer',
           borderRadius: 10, transition: 'all 0.15s', flexShrink: 0,
         }}
-        onMouseEnter={e => { e.currentTarget.style.color = '#e85c6a'; e.currentTarget.style.background = 'rgba(232,92,106,0.1)' }}
-        onMouseLeave={e => { e.currentTarget.style.color = '#5a3d45'; e.currentTarget.style.background = 'none' }}
+        onMouseEnter={e => { e.currentTarget.style.color = '#FF8A7A'; e.currentTarget.style.background = 'rgba(255,138,122,0.1)' }}
+        onMouseLeave={e => { e.currentTarget.style.color = '#5C626D'; e.currentTarget.style.background = 'none' }}
       >
         <LogOut size={17} />
       </button>
@@ -190,7 +191,7 @@ function NavIcon({ active, title, onClick, children }: {
         position: 'absolute', left: -12, top: '50%',
         transform: `translateY(-50%) scaleY(${active ? 1 : hovered ? 0.5 : 0})`,
         width: 4, height: active ? 36 : 18,
-        background: '#f0e4e7', borderRadius: '0 4px 4px 0',
+        background: '#E8EAEE', borderRadius: '0 4px 4px 0',
         transition: 'transform 0.15s, height 0.15s',
       }} />
       <button
@@ -201,13 +202,13 @@ function NavIcon({ active, title, onClick, children }: {
         style={{
           width: 48, height: 48,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: active || hovered ? '#f0e4e7' : '#c4a0ab',
-          background: active ? 'linear-gradient(135deg, #8b3a52, #b04e6a)' : hovered ? 'rgba(139,58,82,0.3)' : 'rgba(139,58,82,0.12)',
+          color: active ? 'var(--accent-ink)' : hovered ? '#E8EAEE' : '#C9CDD4',
+          background: active ? 'var(--accent)' : hovered ? 'rgba(79,209,165,0.3)' : 'rgba(79,209,165,0.12)',
           borderRadius: active || hovered ? '30%' : '50%',
           border: 'none', cursor: 'pointer',
           transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           overflow: 'hidden', flexShrink: 0,
-          boxShadow: active ? '0 4px 16px rgba(139,58,82,0.45)' : 'none',
+          boxShadow: active ? '0 4px 16px rgba(79,209,165,0.45)' : 'none',
         }}
       >
         {children}
@@ -220,7 +221,7 @@ function Divider() {
   return (
     <div style={{
       width: 32, height: 1.5,
-      background: 'linear-gradient(to right, transparent, rgba(139,58,82,0.3), transparent)',
+      background: 'linear-gradient(to right, transparent, rgba(79,209,165,0.3), transparent)',
       borderRadius: 1, margin: '6px 0', flexShrink: 0,
     }} />
   )
@@ -230,25 +231,9 @@ function ThickDivider() {
   return (
     <div style={{
       width: 36, height: 2,
-      background: 'linear-gradient(to right, transparent, rgba(139,58,82,0.45), transparent)',
+      background: 'linear-gradient(to right, transparent, rgba(79,209,165,0.45), transparent)',
       borderRadius: 1, margin: '8px 0', flexShrink: 0,
     }} />
   )
 }
 
-function FlowerIcon({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <g transform="translate(12,12)">
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.92" transform="rotate(0)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.88" transform="rotate(60)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#b05a72" opacity="0.88" transform="rotate(120)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#b05a72" opacity="0.84" transform="rotate(180)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.84" transform="rotate(240)" />
-        <ellipse cx="0" cy="-5.2" rx="2.6" ry="4.2" fill="#c96b82" opacity="0.88" transform="rotate(300)" />
-      </g>
-      <circle cx="12" cy="12" r="3.8" fill="#f5dde5" />
-      <circle cx="12" cy="12" r="2.2" fill="#f0e4e7" />
-    </svg>
-  )
-}

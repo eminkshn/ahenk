@@ -72,10 +72,10 @@ export default function MessageInput({ channelId }: { channelId: string }) {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '4px 10px', marginBottom: 6, borderRadius: 8,
-          background: blocked ? 'rgba(250,166,26,0.12)' : 'rgba(139,58,82,0.08)',
-          border: `1px solid ${blocked ? 'rgba(250,166,26,0.3)' : 'rgba(139,58,82,0.15)'}`,
+          background: blocked ? 'rgba(242,181,68,0.12)' : 'rgba(79,209,165,0.08)',
+          border: `1px solid ${blocked ? 'rgba(242,181,68,0.3)' : 'rgba(79,209,165,0.15)'}`,
           fontSize: '0.75rem',
-          color: blocked ? '#faa61a' : '#5a3d45',
+          color: blocked ? '#F2B544' : '#5C626D',
           width: 'fit-content',
         }}>
           <Clock size={11} />
@@ -88,17 +88,17 @@ export default function MessageInput({ channelId }: { channelId: string }) {
       ) : null}
 
       {serverError && !blocked && (
-        <div style={{ fontSize: '0.75rem', color: '#e85c6a', marginBottom: 4, paddingLeft: 4 }}>
+        <div style={{ fontSize: '0.75rem', color: '#FF8A7A', marginBottom: 4, paddingLeft: 4 }}>
           {serverError}
         </div>
       )}
 
       <div style={{
         background: 'var(--bg-elevated)',
-        border: `1px solid ${focused ? 'rgba(139,58,82,0.5)' : blocked ? 'rgba(250,166,26,0.3)' : 'rgba(139,58,82,0.2)'}`,
+        border: `1px solid ${focused ? 'rgba(79,209,165,0.5)' : blocked ? 'rgba(242,181,68,0.3)' : 'rgba(79,209,165,0.2)'}`,
         borderRadius: 14,
         transition: 'border-color 0.15s, box-shadow 0.15s',
-        boxShadow: focused ? '0 0 0 3px rgba(139,58,82,0.1)' : 'none',
+        boxShadow: focused ? '0 0 0 3px rgba(79,209,165,0.1)' : 'none',
         opacity: blocked ? 0.7 : 1,
       }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, padding: '10px 14px' }}>
@@ -106,13 +106,13 @@ export default function MessageInput({ channelId }: { channelId: string }) {
             style={{
               padding: '4px', flexShrink: 0,
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#5a3d45', borderRadius: 6,
+              color: '#5C626D', borderRadius: 6,
               display: 'flex', alignItems: 'center',
               transition: 'color 0.15s',
               marginBottom: 2,
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#c96b82')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#5a3d45')}
+            onMouseEnter={e => (e.currentTarget.style.color = '#4FD1A5')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#5C626D')}
             title="Emoji (yakında)"
           >
             <SmilePlus size={18} />
@@ -133,7 +133,7 @@ export default function MessageInput({ channelId }: { channelId: string }) {
             disabled={sending || blocked}
             style={{
               flex: 1, background: 'transparent', border: 'none', outline: 'none',
-              resize: 'none', color: '#e4d0d4', fontSize: '0.9375rem',
+              resize: 'none', color: '#D5D8DE', fontSize: '0.9375rem',
               lineHeight: 1.5, fontFamily: 'inherit',
               maxHeight: 160, overflowY: 'auto',
               scrollbarWidth: 'none',
@@ -150,12 +150,12 @@ export default function MessageInput({ channelId }: { channelId: string }) {
             disabled={!content.trim() || sending || blocked}
             style={{
               padding: '6px', flexShrink: 0, marginBottom: 2,
-              background: content.trim() && !blocked ? 'linear-gradient(135deg, #8b3a52, #b04e6a)' : 'rgba(139,58,82,0.1)',
+              background: content.trim() && !blocked ? 'var(--accent)' : 'rgba(79,209,165,0.1)',
               border: 'none', borderRadius: 8, cursor: content.trim() && !blocked ? 'pointer' : 'not-allowed',
-              color: content.trim() && !blocked ? '#f0e4e7' : '#5a3d45',
+              color: content.trim() && !blocked ? 'var(--accent-ink)' : '#5C626D',
               display: 'flex', alignItems: 'center',
               transition: 'all 0.15s',
-              boxShadow: content.trim() && !blocked ? '0 2px 8px rgba(139,58,82,0.35)' : 'none',
+              boxShadow: content.trim() && !blocked ? '0 2px 8px rgba(79,209,165,0.35)' : 'none',
             }}
             title={blocked ? `${cooldown}s bekle` : 'Gönder (Enter)'}
           >
@@ -166,11 +166,11 @@ export default function MessageInput({ channelId }: { channelId: string }) {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 14px 8px',
-          fontSize: '0.7rem', color: '#5a3d45',
+          fontSize: '0.7rem', color: '#5C626D',
         }}>
           <span>Enter → gönder &nbsp;·&nbsp; Shift+Enter → yeni satır</span>
           {nearLimit && (
-            <span style={{ color: charCount > 1950 ? '#e85c6a' : '#faa61a' }}>
+            <span style={{ color: charCount > 1950 ? '#FF8A7A' : '#F2B544' }}>
               {charCount}/2000
             </span>
           )}
