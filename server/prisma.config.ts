@@ -11,7 +11,7 @@ export default defineConfig({
     async adapter() {
       const { PrismaPg } = await import('@prisma/adapter-pg')
       const connectionString = process.env.DATABASE_URL!
-      const ssl = connectionString.includes('supabase.co') ? { rejectUnauthorized: false } : undefined
+      const ssl = /supabase\.(co|com)\b/.test(connectionString) ? { rejectUnauthorized: false } : undefined
       return new PrismaPg({ connectionString, ssl })
     },
   },
